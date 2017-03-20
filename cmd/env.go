@@ -8,16 +8,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func envRunner(cmd *cobra.Command, args []string) {
-	role := utils.RoleParse(args)
-	assumption := utils.AssumeRole(role, cmd.Flags())
-	fmt.Printf("Access Key: %s\n", assumption.Access_key)
+func envRunner(cmd *cobra.Command, args []string) error {
+	rolename, err := utils.RoleNameParse(args)
+	if err != nil {
+		return err
+	}
+	role, err := utils.AssumeRole(rolename, cmd.Flags())
+	if err != nil {
+		return err
+	}
+	for _, line := range role.ToEnvVars() {
+		fmt.Println(line)
+	}
+	return nil
 }
 
 var envCmd = &cobra.Command{
 	Use:   "env ROLENAME",
 	Short: "Print environment variables for an assumed role",
-	Run:   envRunner,
+	RunE:  envRunner,
 }
 
 func init() {

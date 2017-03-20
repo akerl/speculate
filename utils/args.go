@@ -2,13 +2,24 @@ package utils
 
 import (
 	"fmt"
-	"os"
+
+	"github.com/aws/aws-sdk-go/service/sts"
 )
 
-func RoleParse(args []string) string {
+func RoleNameParse(args []string) (string, error) {
 	if len(args) < 1 {
-		fmt.Printf("No role name provided\n")
-		os.Exit(1)
+		return "", fmt.Errorf("No role name provided")
 	}
-	return args[0]
+	return args[0], nil
+}
+
+func RoleArn(role string) (string, error) {
+	var params *sts.GetCallerIdentityInput
+	resp, err := StsSession.GetCallerIdentity(params)
+	if err != nil {
+		return "", err
+	}
+	accountid := *resp.Account
+	arn := fmt.Sprintf("arn:aws:iam::%s:role/%s", accountid, role)
+	return arn, nil
 }
