@@ -9,10 +9,13 @@ import (
 var sess = session.Must(session.NewSession(&aws.Config{
 	CredentialsChainVerboseErrors: aws.Bool(true),
 }))
+
+// StsSession is a shared API client for talking to STS
 var StsSession = sts.New(sess)
 
 var stsIdentityCache = make(map[string]string)
 
+// StsIdentity is a shared cache for the origin AWS identity
 func StsIdentity() (map[string]string, error) {
 	if stsIdentityCache["Account"] != "" {
 		return stsIdentityCache, nil

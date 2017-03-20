@@ -10,19 +10,19 @@ import (
 
 func envRunner(cmd *cobra.Command, args []string) error {
 	flags := cmd.Flags()
-	account_id, err := flags.GetString("account")
+	accountID, err := flags.GetString("account")
 	if err != nil {
 		return err
 	}
-	session_name, err := flags.GetString("session")
+	sessionName, err := flags.GetString("session")
 	if err != nil {
 		return err
 	}
-	rolename, err := utils.RoleNameParse(args)
+	roleName, err := utils.RoleNameParse(args)
 	if err != nil {
 		return err
 	}
-	role, err := utils.AssumeRole(rolename, account_id, session_name)
+	role, err := utils.AssumeRole(roleName, accountID, sessionName)
 	if err != nil {
 		return err
 	}
@@ -39,6 +39,6 @@ var envCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.AddCommand(envCmd)
+	rootCmd.AddCommand(envCmd)
 	utils.AddAssumeFlags(envCmd)
 }

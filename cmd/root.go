@@ -8,18 +8,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var RootCmd = &cobra.Command{
+var rootCmd = &cobra.Command{
 	Use:           "speculate",
 	Short:         "Tool for assuming roles in AWS accounts",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 }
 
+// Execute function is the entrypoint for the CLI
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
-		if aws_error, ok := err.(awserr.Error); ok {
+	if err := rootCmd.Execute(); err != nil {
+		if awsError, ok := err.(awserr.Error); ok {
 			fmt.Println("AWS Error encountered:")
-			fmt.Printf("%s: %s\n", aws_error.Code(), aws_error.Message())
+			fmt.Printf("%s: %s\n", awsError.Code(), awsError.Message())
 		} else {
 			fmt.Println(err)
 		}

@@ -6,25 +6,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// AddAssumeFlags adds the flags for role assumption to a command object
 func AddAssumeFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP("account", "a", "", "Account ID to assume role on (defaults to source account")
 	cmd.Flags().StringP("session", "s", "", "Set session name for assumed role (defaults to origin user name)")
 	AddMfaFlags(cmd)
 }
 
-func AssumeRole(role, account_id, session_name string) (Role, error) {
-	arn, err := RoleArn(role, account_id)
+// AssumeRole handles role assumption using
+func AssumeRole(role, accountID, sessionName string) (Role, error) {
+	arn, err := RoleArn(role, accountID)
 	if err != nil {
 		return Role{}, err
 	}
-	session_name, err = SessionName(session_name)
+	sessionName, err = SessionName(sessionName)
 	if err != nil {
 		return Role{}, err
 	}
 
 	params := &sts.AssumeRoleInput{
 		RoleArn:         aws.String(arn),
-		RoleSessionName: aws.String(session_name),
+		RoleSessionName: aws.String(sessionName),
 	}
 	resp, err := StsSession.AssumeRole(params)
 	if err != nil {
@@ -32,10 +34,10 @@ func AssumeRole(role, account_id, session_name string) (Role, error) {
 	}
 
 	creds := resp.Credentials
-	new_role := Role{
+	newRole := Role{
 		AccessKey:    *creds.AccessKeyId,
 		SecretKey:    *creds.SecretAccessKey,
 		SessionToken: *creds.SessionToken,
 	}
-	return new_role, nil
+	return newRole, nil
 }

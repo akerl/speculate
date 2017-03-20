@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/akerl/speculate/utils"
+
 	"github.com/spf13/cobra"
 )
 
@@ -16,5 +17,5 @@ var versionCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(versionCmd)
 }

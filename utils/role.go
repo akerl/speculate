@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// Role defines a set of credentials for the AWS API
 type Role struct {
 	AccessKey, SecretKey, SessionToken string
 }
@@ -29,6 +30,7 @@ var translations = map[string]map[string]string{
 	},
 }
 
+// NewRole creates a new Role object from provided credentials
 func NewRole(creds map[string]string) (Role, error) {
 	required := []string{"AccessKey", "SecretKey", "SessionToken"}
 	for _, key := range required {
@@ -45,6 +47,7 @@ func NewRole(creds map[string]string) (Role, error) {
 	return role, nil
 }
 
+// NewRoleFromEnv creates a new Role object using credentials from the environment
 func NewRoleFromEnv() (Role, error) {
 	creds := make(map[string]string)
 	for k, v := range translations["envvar"] {
@@ -72,6 +75,7 @@ func (r Role) translate(dictionary map[string]string) map[string]string {
 	return new
 }
 
+// ToEnvVars returns environment variables suitable for eval-ing into the shell
 func (r Role) ToEnvVars() []string {
 	creds := r.translate(translations["envvar"])
 	var res []string
@@ -82,21 +86,21 @@ func (r Role) ToEnvVars() []string {
 	return res
 }
 
-var base_console_token_url = "https://signin.aws.amazon.com/federation?Action=getSigninToken&Session="
+var baseConsoleTokenURL = "https://signin.aws.amazon.com/federation?Action=getSigninToken&Session="
 
-type console_token_response struct {
+type consoleTokenResponse struct {
 	SigninToken string
 }
 
 func (r Role) toConsoleToken() (string, error) {
 	creds := r.translate(translations["console"])
 
-	json_creds, err := json.Marshal(creds)
+	jsonCreds, err := json.Marshal(creds)
 	if err != nil {
 		return "", err
 	}
-	url_creds := url.QueryEscape(string(json_creds))
-	url := strings.Join([]string{base_console_token_url, url_creds}, "")
+	urlCreds := url.QueryEscape(string(jsonCreds))
+	url := strings.Join([]string{baseConsoleTokenURL, urlCreds}, "")
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -105,28 +109,29 @@ func (r Role) toConsoleToken() (string, error) {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
-	token_obj := console_token_response{}
-	if err := json.Unmarshal(body, &token_obj); err != nil {
+	tokenObj := consoleTokenResponse{}
+	if err := json.Unmarshal(body, &tokenObj); err != nil {
 		return "", err
 	}
 
-	return token_obj.SigninToken, nil
+	return tokenObj.SigninToken, nil
 }
 
-func (r Role) ToConsoleUrl() (string, error) {
-	console_token, err := r.toConsoleToken()
+// ToConsoleURL returns a console URL for the role
+func (r Role) ToConsoleURL() (string, error) {
+	consoleToken, err := r.toConsoleToken()
 	if err != nil {
 		return "", nil
 	}
-	url_parts := []string{
+	urlParts := []string{
 		"https://signin.aws.amazon.com/federation",
 		"?Action=login",
 		"&Issuer=",
 		"&Destination=",
 		url.QueryEscape("https://console.aws.amazon.com/"),
 		"&SigninToken=",
-		console_token,
+		consoleToken,
 	}
-	url_string := strings.Join(url_parts, "")
-	return url_string, nil
+	urlString := strings.Join(urlParts, "")
+	return urlString, nil
 }

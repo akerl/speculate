@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// RoleNameParse returns the role name or an error
 func RoleNameParse(args []string) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("No role name provided")
@@ -12,27 +13,29 @@ func RoleNameParse(args []string) (string, error) {
 	return args[0], nil
 }
 
-func RoleArn(role string, account_id string) (string, error) {
-	if account_id == "" {
+// RoleArn returns the new role ARN
+func RoleArn(role string, accountID string) (string, error) {
+	if accountID == "" {
 		identity, err := StsIdentity()
 		if err != nil {
 			return "", err
 		}
-		account_id = identity["Account"]
+		accountID = identity["Account"]
 	}
-	arn := fmt.Sprintf("arn:aws:iam::%s:role/%s", account_id, role)
+	arn := fmt.Sprintf("arn:aws:iam::%s:role/%s", accountID, role)
 	return arn, nil
 }
 
-func SessionName(session_name string) (string, error) {
-	if session_name != "" {
-		return session_name, nil
+// SessionName returns a new session name based on user input or identity
+func SessionName(sessionName string) (string, error) {
+	if sessionName != "" {
+		return sessionName, nil
 	}
 	identity, err := StsIdentity()
 	if err != nil {
 		return "", err
 	}
-	arn_chunks := strings.Split(identity["Arn"], "/")
-	old_name := arn_chunks[len(arn_chunks)-1]
-	return old_name, nil
+	arnChunks := strings.Split(identity["Arn"], "/")
+	oldName := arnChunks[len(arnChunks)-1]
+	return oldName, nil
 }
