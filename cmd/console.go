@@ -8,8 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var logout_url = "https://console.aws.amazon.com/ec2/logout!doLogout"
-
 func consoleRunner(cmd *cobra.Command, args []string) error {
 	role, err := utils.NewRoleFromEnv()
 	if err != nil {
@@ -32,5 +30,4 @@ var consoleCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(consoleCmd)
-	consoleCmd.Flags().BoolP("logout", "l", false, "Open logout page before opening new session URL")
 }
