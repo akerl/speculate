@@ -1,10 +1,11 @@
 .PHONY: default build clean lint fmt test deps
 
 PACKAGE = speculate
+NAMESPACE = github.com/akerl
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2>/dev/null)
 GOPATH = $(CURDIR)/.gopath
 BIN = $(GOPATH)/bin
-BASE = $(GOPATH)/src/$(PACKAGE)
+BASE = $(GOPATH)/src/$(NAMESPACE)/$(PACKAGE)
 
 GO = go
 GOFMT = gofmt
@@ -29,12 +30,12 @@ fmt:
 test: deps
 	$(GO) test ./...
 
-deps:
+deps: $(BASE)
 	$(GO) get -d
 
 $(BASE):
 	mkdir -p $(dir $@)
-	ln -sf $(CURDIR) $@
+	ln -vsf $(CURDIR) $@
 
 $(GOLINT): $(BASE)
 	$(GO) get github.com/golang/lint/golint

@@ -13,7 +13,7 @@ func consoleRunner(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	url, err := role.ToConsoleUrl()
+	url, err := role.ToConsoleURL()
 	if err != nil {
 		return err
 	}
