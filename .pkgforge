@@ -1,0 +1,18 @@
+name 'speculate'
+org 'akerl'
+
+build do
+  configure
+  make
+  install
+end
+
+source(
+  type: 'git',
+  path: '.'
+)
+
+
+test do
+  # TODO: add tests
+end
