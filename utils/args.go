@@ -14,7 +14,7 @@ func RoleNameParse(args []string) (string, error) {
 }
 
 // RoleArn returns the new role ARN
-func RoleArn(role string, accountID string) (string, error) {
+func roleArn(role string, accountID string) (string, error) {
 	if accountID == "" {
 		identity, err := StsIdentity()
 		if err != nil {
@@ -26,8 +26,22 @@ func RoleArn(role string, accountID string) (string, error) {
 	return arn, nil
 }
 
+// mfaArn converts a User's ARN into their MFA ARN
+func mfaArn() (string, error) {
+	identity, err := StsIdentity()
+	if err != nil {
+		return "", err
+	}
+	userArn := identity["Arn"]
+	if strings.Index(userArn, ":user/") == -1 {
+		return "", fmt.Errorf("Failed to parse MFA ARN for non-user: %s", userArn)
+	}
+	mfaArn := strings.Replace(userArn, ":user/", ":mfa/", 1)
+	return mfaArn, nil
+}
+
 // SessionName returns a new session name based on user input or identity
-func SessionName(sessionName string) (string, error) {
+func sessionName(sessionName string) (string, error) {
 	if sessionName != "" {
 		return sessionName, nil
 	}

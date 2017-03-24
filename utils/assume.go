@@ -14,19 +14,32 @@ func AddAssumeFlags(cmd *cobra.Command) {
 }
 
 // AssumeRole handles role assumption using
-func AssumeRole(role, accountID, sessionName string) (Role, error) {
-	arn, err := RoleArn(role, accountID)
+func AssumeRole(role string, accountID string, sessName string, useMfa bool, mfaCode string) (Role, error) {
+	arn, err := roleArn(role, accountID)
 	if err != nil {
 		return Role{}, err
 	}
-	sessionName, err = SessionName(sessionName)
+	sessName, err = sessionName(sessName)
 	if err != nil {
 		return Role{}, err
 	}
 
 	params := &sts.AssumeRoleInput{
 		RoleArn:         aws.String(arn),
-		RoleSessionName: aws.String(sessionName),
+		RoleSessionName: aws.String(sessName),
+	}
+	if useMfa || mfaCode != "" {
+		*params.SerialNumber, err = mfaArn()
+		if err != nil {
+			return Role{}, err
+		}
+		if mfaCode == "" {
+			mfaCode, err = promptForMfa()
+			if err != nil {
+				return Role{}, err
+			}
+		}
+		*params.TokenCode = mfaCode
 	}
 	resp, err := StsSession.AssumeRole(params)
 	if err != nil {

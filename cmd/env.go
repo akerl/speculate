@@ -18,11 +18,19 @@ func envRunner(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	useMfa, err := flags.GetBool("mfa")
+	if err != nil {
+		return err
+	}
+	mfaCode, err := flags.GetString("mfacode")
+	if err != nil {
+		return err
+	}
 	roleName, err := utils.RoleNameParse(args)
 	if err != nil {
 		return err
 	}
-	role, err := utils.AssumeRole(roleName, accountID, sessionName)
+	role, err := utils.AssumeRole(roleName, accountID, sessionName, useMfa, mfaCode)
 	if err != nil {
 		return err
 	}
