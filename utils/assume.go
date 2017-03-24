@@ -29,17 +29,18 @@ func AssumeRole(role string, accountID string, sessName string, useMfa bool, mfa
 		RoleSessionName: aws.String(sessName),
 	}
 	if useMfa || mfaCode != "" {
-		*params.SerialNumber, err = mfaArn()
+		serialNumber, err := mfaArn()
 		if err != nil {
 			return Role{}, err
 		}
+		params.SerialNumber = aws.String(serialNumber)
 		if mfaCode == "" {
 			mfaCode, err = promptForMfa()
 			if err != nil {
 				return Role{}, err
 			}
 		}
-		*params.TokenCode = mfaCode
+		params.TokenCode = aws.String(mfaCode)
 	}
 	resp, err := StsSession.AssumeRole(params)
 	if err != nil {
