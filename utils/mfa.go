@@ -17,7 +17,7 @@ func AddMfaFlags(cmd *cobra.Command) {
 
 func promptForMfa() (string, error) {
 	mfaReader := bufio.NewReader(os.Stdin)
-	fmt.Print("MFA Code: ")
+	fmt.Fprint(os.Stderr, "MFA Code: ")
 	mfa, err := mfaReader.ReadString('\n')
 	if err != nil {
 		return "", err

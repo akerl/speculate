@@ -15,15 +15,27 @@ func RoleNameParse(args []string) (string, error) {
 
 // RoleArn returns the new role ARN
 func roleArn(role string, accountID string) (string, error) {
+	identity, err := StsIdentity()
+	if err != nil {
+		return "", err
+	}
+	partition, err := partitionName(identity["Arn"])
+	if err != nil {
+		return "", err
+	}
 	if accountID == "" {
-		identity, err := StsIdentity()
-		if err != nil {
-			return "", err
-		}
 		accountID = identity["Account"]
 	}
-	arn := fmt.Sprintf("arn:aws:iam::%s:role/%s", accountID, role)
+	arn := fmt.Sprintf("arn:%s:iam::%s:role/%s", partition, accountID, role)
 	return arn, nil
+}
+
+func partitionName(arn string) (string, error) {
+	pieces := strings.Split(arn, ":")
+	if len(pieces) != 6 {
+		return "", fmt.Errorf("Invalid ARN provided: %s", arn)
+	}
+	return pieces[1], nil
 }
 
 // mfaArn converts a User's ARN into their MFA ARN
