@@ -30,7 +30,14 @@ func envRunner(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	role, err := utils.AssumeRole(roleName, accountID, sessionName, useMfa, mfaCode)
+	lifetime, err := flags.GetInt64("lifetime")
+	if err != nil {
+		return err
+	}
+	if lifetime < 900 || lifetime > 3600 {
+		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", lifetime)
+	}
+	role, err := utils.AssumeRole(roleName, accountID, sessionName, useMfa, mfaCode, lifetime)
 	if err != nil {
 		return err
 	}

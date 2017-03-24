@@ -86,21 +86,29 @@ func (r Role) ToEnvVars() []string {
 	return res
 }
 
-var baseConsoleTokenURL = "https://signin.aws.amazon.com/federation?Action=getSigninToken&Session="
+var consoleTokenURL = "https://signin.aws.amazon.com/federation"
 
 type consoleTokenResponse struct {
 	SigninToken string
 }
 
-func (r Role) toConsoleToken() (string, error) {
-	creds := r.translate(translations["console"])
+func (r Role) toConsoleToken(lifetime int) (string, error) {
+	args := []string{"Action=getSigninToken"}
 
+	paramSession := fmt.Sprintf("SessionDuration=%d", lifetime)
+	args = append(args, paramSession)
+
+	creds := r.translate(translations["console"])
 	jsonCreds, err := json.Marshal(creds)
 	if err != nil {
 		return "", err
 	}
 	urlCreds := url.QueryEscape(string(jsonCreds))
-	url := strings.Join([]string{baseConsoleTokenURL, urlCreds}, "")
+	paramCreds := fmt.Sprintf("Session=%s", urlCreds)
+	args = append(args, paramCreds)
+
+	argString := strings.Join(args, "&")
+	url := strings.Join([]string{consoleTokenURL, argString}, "?")
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -118,8 +126,8 @@ func (r Role) toConsoleToken() (string, error) {
 }
 
 // ToConsoleURL returns a console URL for the role
-func (r Role) ToConsoleURL() (string, error) {
-	consoleToken, err := r.toConsoleToken()
+func (r Role) ToConsoleURL(lifetime int) (string, error) {
+	consoleToken, err := r.toConsoleToken(lifetime)
 	if err != nil {
 		return "", nil
 	}
