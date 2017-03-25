@@ -10,11 +10,10 @@ import (
 
 func envRunner(cmd *cobra.Command, args []string) error {
 	assumption := utils.Assumption{}
-	var err error
-	assumption.RoleName, err = utils.RoleNameParse(args)
-	if err != nil {
-		return err
+	if len(args) < 1 {
+		return fmt.Errorf("No role name provided")
 	}
+	assumption.RoleName = args[0]
 	role, err := assumption.AssumeRole()
 	if err != nil {
 		return err

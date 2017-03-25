@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/sts"
 )
 
 func promptForMfa() (string, error) {
@@ -16,4 +19,23 @@ func promptForMfa() (string, error) {
 	}
 	mfa = strings.TrimRight(mfa, "\n")
 	return mfa, nil
+}
+
+func configureMfa(a Assumption, params *sts.AssumeRoleInput) error {
+	if !a.UseMfa && a.MfaCode == "" {
+		return nil
+	}
+	serialNumber, err := API.MfaArn()
+	if err != nil {
+		return err
+	}
+	params.SerialNumber = aws.String(serialNumber)
+	if a.MfaCode == "" {
+		a.MfaCode, err = promptForMfa()
+		if err != nil {
+			return err
+		}
+	}
+	params.TokenCode = aws.String(a.MfaCode)
+	return nil
 }

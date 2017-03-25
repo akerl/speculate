@@ -65,13 +65,15 @@ func (a Assumption) ParseFlags(cmd *cobra.Command) error {
 
 // AssumeRole actions a role assumption object
 func (a Assumption) AssumeRole() (Role, error) {
-	arn, err := roleArn(a.RoleName, a.AccountID)
+	arn, err := API.RoleArn(a.RoleName, a.AccountID)
 	if err != nil {
 		return Role{}, err
 	}
-	a.SessionName, err = parseSessionName(a.SessionName)
-	if err != nil {
-		return Role{}, err
+	if a.SessionName == "" {
+		a.SessionName, err = API.SessionName()
+		if err != nil {
+			return Role{}, err
+		}
 	}
 
 	params := &sts.AssumeRoleInput{
@@ -82,21 +84,12 @@ func (a Assumption) AssumeRole() (Role, error) {
 	if a.Policy != "" {
 		params.Policy = aws.String(a.Policy)
 	}
-	if a.UseMfa || a.MfaCode != "" {
-		serialNumber, err := mfaArn()
-		if err != nil {
-			return Role{}, err
-		}
-		params.SerialNumber = aws.String(serialNumber)
-		if a.MfaCode == "" {
-			a.MfaCode, err = promptForMfa()
-			if err != nil {
-				return Role{}, err
-			}
-		}
-		params.TokenCode = aws.String(a.MfaCode)
+	if err := configureMfa(a, params); err != nil {
+		return Role{}, err
 	}
-	resp, err := StsSession.AssumeRole(params)
+
+	client := API.Client()
+	resp, err := client.AssumeRole(params)
 	if err != nil {
 		return Role{}, err
 	}

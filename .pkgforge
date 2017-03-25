@@ -1,17 +1,29 @@
 name 'speculate'
 org 'akerl'
 
-build do
-  configure
-  make
-  install
-end
-
 source(
   type: 'git',
   path: '.'
 )
 
+build do
+  make
+  cp 'bin'
+end
+
+package(
+  type: 'file',
+  artifacts: [
+    {
+      source: 'bin/speculate_darwin_amd64',
+      name: 'speculate_darwin_amd64'
+    },
+    {
+      source: 'bin/speculate_linux_amd64',
+      name: 'speculate_linux_amd64'
+    }
+  ]
+)
 
 test do
   # TODO: add tests
