@@ -52,8 +52,8 @@ func mfaArn() (string, error) {
 	return mfaArn, nil
 }
 
-// SessionName returns a new session name based on user input or identity
-func sessionName(sessionName string) (string, error) {
+// parseSessionName returns a new session name based on user input or identity
+func parseSessionName(sessionName string) (string, error) {
 	if sessionName != "" {
 		return sessionName, nil
 	}

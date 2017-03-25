@@ -9,35 +9,13 @@ import (
 )
 
 func envRunner(cmd *cobra.Command, args []string) error {
-	flags := cmd.Flags()
-	accountID, err := flags.GetString("account")
+	assumption := utils.Assumption{}
+	var err error
+	assumption.RoleName, err = utils.RoleNameParse(args)
 	if err != nil {
 		return err
 	}
-	sessionName, err := flags.GetString("session")
-	if err != nil {
-		return err
-	}
-	useMfa, err := flags.GetBool("mfa")
-	if err != nil {
-		return err
-	}
-	mfaCode, err := flags.GetString("mfacode")
-	if err != nil {
-		return err
-	}
-	roleName, err := utils.RoleNameParse(args)
-	if err != nil {
-		return err
-	}
-	lifetime, err := flags.GetInt64("lifetime")
-	if err != nil {
-		return err
-	}
-	if lifetime < 900 || lifetime > 3600 {
-		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", lifetime)
-	}
-	role, err := utils.AssumeRole(roleName, accountID, sessionName, useMfa, mfaCode, lifetime)
+	role, err := assumption.AssumeRole()
 	if err != nil {
 		return err
 	}
