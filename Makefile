@@ -33,7 +33,7 @@ test: deps
 	$(GO) test ./...
 
 deps: $(BASE)
-	$(GO) get -d
+	rsync -ax /Users/akerl/src/akerl/speculate/.gopath .gopath
 
 $(BASE):
 	mkdir -p $(dir $@)
