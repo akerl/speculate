@@ -9,6 +9,12 @@ Tool for assuming roles in AWS accounts
 
 ## Usage
 
+To assume the "admin" role in the local account:
+
+```
+speculate admin
+```
+
 ## Installation
 
 ## License
