@@ -11,6 +11,7 @@ GO = go
 GOFMT = gofmt
 GOX = $(BIN)/gox
 GOLINT = $(BIN)/golint
+GOVEND = $(BIN)/govend
 
 build: deps $(GOX) fmt lint test
 	$(GOX) \
@@ -32,12 +33,12 @@ fmt:
 test: deps
 	$(GO) test ./...
 
-deps: $(BASE)
-	rsync -ax /Users/akerl/src/akerl/speculate/.gopath .gopath
+deps: $(BASE) $(GOVEND)
+	cd $(BASE) && $(GOVEND) -v
 
 $(BASE):
 	mkdir -p $(dir $@)
-	ln -vsf $(CURDIR) $@
+	rsync -avx --exclude '.gopath' --exclude '.git' $(CURDIR) $@
 
 $(GOLINT): $(BASE)
 	$(GO) get github.com/golang/lint/golint
@@ -45,3 +46,5 @@ $(GOLINT): $(BASE)
 $(GOX): $(BASE)
 	$(GO) get github.com/mitchellh/gox
 
+$(GOVEND): $(BASE)
+	$(GO) get -u github.com/govend/govend
