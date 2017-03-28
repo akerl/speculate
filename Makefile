@@ -38,7 +38,7 @@ deps: $(BASE) $(GOVEND)
 
 $(BASE):
 	mkdir -p $(dir $@)
-	rsync -ax --exclude '.gopath' --exclude '.git' $(CURDIR) $@
+	rsync -ax --exclude '.gopath' --exclude '.git' $(CURDIR)/ $@
 	for i in $$(cd vendor && find . -mindepth 3 -maxdepth 3 -type d) ; do \
 		mkdir -p .gopath/src/$$(dirname $$i); \
 		cp -R vendor/$$i .gopath/src/$$i; \
