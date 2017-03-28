@@ -1,0 +1,11 @@
+vendors:
+- path: github.com/aws/aws-sdk-go/aws
+  rev: de61b9d1e0c7e455b050e4307eba09410c412ef0
+- path: github.com/golang/lint
+  rev: cb00e5669539f047b2f4c53a421a01b0c8e172c6
+- path: github.com/govend/govend
+  rev: e600875ef1a607d94980144f6cfb33acceb0eac8
+- path: github.com/mitchellh/gox
+  rev: c9740af9c6574448fd48eb30a71f964014c7a837
+- path: github.com/spf13/cobra
+  rev: 7be4beda01ec05d0b93d80b3facd2b6f44080d94
