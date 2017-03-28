@@ -4,3 +4,6 @@
 [submodule "vendor/github.com/spf13/cobra"]
 	path = vendor/github.com/spf13/cobra
 	url = https://github.com/spf13/cobra
+[submodule "vendor/github.com/govend/govend"]
+	path = vendor/github.com/govend/govend
+	url = https://github.com/govend/govend
