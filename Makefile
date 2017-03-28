@@ -38,13 +38,17 @@ deps: $(BASE) $(GOVEND)
 
 $(BASE):
 	mkdir -p $(dir $@)
-	rsync -avx --exclude '.gopath' --exclude '.git' $(CURDIR) $@
+	rsync -ax --exclude '.gopath' --exclude '.git' $(CURDIR) $@
+	for i in $$(cd vendor && find . -mindepth 3 -maxdepth 3 -type d) ; do \
+		mkdir -p .gopath/src/$$(dirname $$i); \
+		cp -R vendor/$$i .gopath/src/$$i; \
+	done
 
 $(GOLINT): $(BASE)
-	$(GO) get github.com/golang/lint/golint
+	$(GO) install github.com/golang/lint/golint
 
 $(GOX): $(BASE)
-	$(GO) get github.com/mitchellh/gox
+	$(GO) install github.com/mitchellh/gox
 
 $(GOVEND): $(BASE)
-	$(GO) get -u github.com/govend/govend
+	$(GO) install github.com/govend/govend

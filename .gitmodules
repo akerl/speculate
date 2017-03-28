@@ -7,3 +7,9 @@
 [submodule "vendor/github.com/govend/govend"]
 	path = vendor/github.com/govend/govend
 	url = https://github.com/govend/govend
+[submodule "vendor/github.com/mitchellh/gox"]
+	path = vendor/github.com/mitchellh/gox
+	url = https://github.com/mitchellh/gox
+[submodule "vendor/github.com/golang/lint"]
+	path = vendor/github.com/golang/lint
+	url = https://github.com/golang/lint
