@@ -51,4 +51,4 @@ $(GOX): $(BASE)
 	$(GO) install github.com/mitchellh/gox
 
 $(GOVEND): $(BASE)
-	$(GO) install github.com/govend/govend
+	$(GO) get github.com/govend/govend
