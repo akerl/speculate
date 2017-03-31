@@ -14,7 +14,11 @@ func envRunner(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("No role name provided")
 	}
 	assumption.RoleName = args[0]
-	assumption.ParseFlags(cmd)
+	err := assumption.ParseFlags(cmd)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%#v\n", assumption)
 	role, err := assumption.AssumeRole()
 	if err != nil {
 		return err
