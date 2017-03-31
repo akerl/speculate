@@ -1,0 +1,17 @@
+machine:
+  services:
+  - docker
+dependencies:
+  override:
+  - git submodule update --init
+  - git fetch --tags origin
+test:
+  override:
+  - make -f meta/Makefile
+  post:
+  - cp -r pkg/* $CIRCLE_ARTIFACTS/
+deployment:
+  release:
+    tag: /.*/
+    commands:
+    - make -f meta/Makefile release
