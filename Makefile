@@ -6,6 +6,8 @@ VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2>/dev/null)
 GOPATH = $(CURDIR)/.gopath
 BIN = $(GOPATH)/bin
 BASE = $(GOPATH)/src/$(NAMESPACE)/$(PACKAGE)
+GOFILES = $(shell find . -type f -name '*.go' ! -path './.*' ! -path './vendor/*')
+GOPACKAGES = $(shell echo $(GOFILES) | xargs dirname | sort | uniq)
 
 GO = go
 GOFMT = gofmt
@@ -25,20 +27,21 @@ clean:
 	rm -rf $(GOPATH) bin
 
 lint: $(GOLINT)
-	$(GOLINT) -set_exit_status ./...
+	$(GOLINT) -set_exit_status $(GOPACKAGES)
 
 fmt:
-	files=$$($(GOFMT) -l $$(find . -type f -name '*.go' ! -path './.*')); if [ -n "$$files" ]; then \
+	@echo "Running gofmt on $(GOFILES)"
+	@files=$$($(GOFMT) -l $(GOFILES)); if [ -n "$$files" ]; then \
 		  echo "Error: '$(GOFMT)' needs to be run on:"; \
 		  echo "$${files}"; \
 		  exit 1; \
 		  fi;
 
 test: deps
-	cd $(BASE) && $(GO) test ./...
+	cd $(BASE) && $(GO) test $(GOPACKAGES)
 
 deps: $(BASE) $(GOVEND)
-	cd $(BASE) && $(GOVEND) -v
+	cd $(BASE) && $(GOVEND)
 
 $(BASE):
 	mkdir -p $(dir $@)
