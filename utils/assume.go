@@ -30,7 +30,7 @@ func AddAssumeFlags(cmd *cobra.Command) {
 }
 
 // ParseFlags for assumption object
-func (a *Assumption) ParseFlags(cmd *cobra.Command) error {
+func (a *Assumption) ParseAssumeFlags(cmd *cobra.Command) error {
 	flags := cmd.Flags()
 	var err error
 	a.AccountID, err = flags.GetString("account")
