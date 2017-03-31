@@ -45,6 +45,7 @@ func (a Assumption) ParseFlags(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Lifetime is %#v\n", a.Lifetime)
 	if a.Lifetime < 900 || a.Lifetime > 3600 {
 		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", a.Lifetime)
 	}
@@ -76,6 +77,7 @@ func (a Assumption) AssumeRole() (Role, error) {
 		}
 	}
 
+	fmt.Printf("Lifetime is %#v\n", a.Lifetime)
 	params := &sts.AssumeRoleInput{
 		RoleArn:         aws.String(arn),
 		RoleSessionName: aws.String(a.SessionName),
@@ -89,6 +91,8 @@ func (a Assumption) AssumeRole() (Role, error) {
 	}
 
 	client := API.Client()
+	fmt.Printf("%#v\n", a)
+	fmt.Printf("%#v\n", params)
 	resp, err := client.AssumeRole(params)
 	if err != nil {
 		return Role{}, err

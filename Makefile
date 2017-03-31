@@ -1,6 +1,6 @@
 .PHONY: default build clean lint fmt test deps
 
-PACKAGE = $(shell basename $(shell pwd))
+PACKAGE = speculate
 NAMESPACE = github.com/akerl
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2>/dev/null)
 GOPATH = $(CURDIR)/.gopath
