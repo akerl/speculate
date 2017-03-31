@@ -15,12 +15,12 @@ package(
   type: 'file',
   artifacts: [
     {
-      source: 'bin/speculate_darwin_amd64',
-      name: 'speculate_darwin_amd64'
+      source: 'bin/speculate_darwin',
+      name: 'speculate_darwin'
     },
     {
-      source: 'bin/speculate_linux_amd64',
-      name: 'speculate_linux_amd64'
+      source: 'bin/speculate_linux',
+      name: 'speculate_linux'
     }
   ]
 )

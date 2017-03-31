@@ -19,7 +19,7 @@ build: deps $(GOX) fmt lint test
 	$(GOX) \
 		-ldflags '-X $(NAMESPACE)/utils.Version=$(VERSION)' \
 		-gocmd="$(GO)" \
-		-output="bin/{{.Dir}}_{{.OS}}_{{.Arch}}" \
+		-output="bin/$(PACKAGE)_{{.OS}}" \
 		-os="darwin linux" \
 		-arch="amd64"
 
