@@ -30,7 +30,7 @@ func AddAssumeFlags(cmd *cobra.Command) {
 }
 
 // ParseFlags for assumption object
-func (a Assumption) ParseFlags(cmd *cobra.Command) error {
+func (a *Assumption) ParseFlags(cmd *cobra.Command) error {
 	flags := cmd.Flags()
 	var err error
 	a.AccountID, err = flags.GetString("account")
@@ -45,11 +45,9 @@ func (a Assumption) ParseFlags(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("A Lifetime is %#v\n", a.Lifetime)
 	if a.Lifetime < 900 || a.Lifetime > 3600 {
 		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", a.Lifetime)
 	}
-	fmt.Printf("B Lifetime is %#v\n", a.Lifetime)
 	a.Policy, err = flags.GetString("policy")
 	if err != nil {
 		return err
@@ -66,7 +64,7 @@ func (a Assumption) ParseFlags(cmd *cobra.Command) error {
 }
 
 // AssumeRole actions a role assumption object
-func (a Assumption) AssumeRole() (Role, error) {
+func (a *Assumption) AssumeRole() (Role, error) {
 	arn, err := API.RoleArn(a.RoleName, a.AccountID)
 	if err != nil {
 		return Role{}, err

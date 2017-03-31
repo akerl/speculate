@@ -18,7 +18,6 @@ func envRunner(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%#v\n", assumption)
 	role, err := assumption.AssumeRole()
 	if err != nil {
 		return err

@@ -21,7 +21,7 @@ func promptForMfa() (string, error) {
 	return mfa, nil
 }
 
-func configureMfa(a Assumption, params *sts.AssumeRoleInput) error {
+func configureMfa(a *Assumption, params *sts.AssumeRoleInput) error {
 	if !a.UseMfa && a.MfaCode == "" {
 		return nil
 	}
