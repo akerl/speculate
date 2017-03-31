@@ -28,10 +28,14 @@ lint: $(GOLINT)
 	$(GOLINT) -set_exit_status ./...
 
 fmt:
-	$(GOFMT) -l -w $$(find . -type f -name '*.go' ! -path './.*')
+	files=$$($(GOFMT) -l $$(find . -type f -name '*.go' ! -path './.*')); if [ -n "$$files" ]; then \
+		  echo "Error: '$(GOFMT)' needs to be run on:"; \
+		  echo "$${files}"; \
+		  exit 1; \
+		  fi;
 
 test: deps
-	$(GO) test ./...
+	cd $(BASE) && $(GO) test ./...
 
 deps: $(BASE) $(GOVEND)
 	cd $(BASE) && $(GOVEND) -v
@@ -39,16 +43,12 @@ deps: $(BASE) $(GOVEND)
 $(BASE):
 	mkdir -p $(dir $@)
 	rsync -ax --exclude '.gopath' --exclude '.git' $(CURDIR)/ $@
-	for i in $$(cd vendor && find . -mindepth 3 -maxdepth 3 -type d) ; do \
-		mkdir -p .gopath/src/$$(dirname $$i); \
-		cp -R vendor/$$i .gopath/src/$$i; \
-	done
 
 $(GOLINT): $(BASE)
-	$(GO) install github.com/golang/lint/golint
+	$(GO) get github.com/golang/lint/golint
 
 $(GOX): $(BASE)
-	$(GO) install github.com/mitchellh/gox
+	$(GO) get github.com/mitchellh/gox
 
 $(GOVEND): $(BASE)
 	$(GO) get github.com/govend/govend
