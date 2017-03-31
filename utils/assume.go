@@ -29,7 +29,7 @@ func AddAssumeFlags(cmd *cobra.Command) {
 	cmd.Flags().String("mfacode", "", "Code to use for MFA")
 }
 
-// ParseFlags for assumption object
+// ParseAssumeFlags for assumption object
 func (a *Assumption) ParseAssumeFlags(cmd *cobra.Command) error {
 	flags := cmd.Flags()
 	var err error
