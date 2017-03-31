@@ -19,10 +19,10 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		if awsError, ok := err.(awserr.Error); ok {
-			fmt.Println("AWS Error encountered:")
-			fmt.Printf("%s: %s\n", awsError.Code(), awsError.Message())
+			fmt.Fprintln(os.Stderr, "AWS Error encountered:")
+			fmt.Fprintf(os.Stderr, "%s: %s\n", awsError.Code(), awsError.Message())
 		} else {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 		}
 		os.Exit(1)
 	}

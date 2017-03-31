@@ -92,11 +92,8 @@ type consoleTokenResponse struct {
 	SigninToken string
 }
 
-func (r Role) toConsoleToken(lifetime int) (string, error) {
+func (r Role) toConsoleToken() (string, error) {
 	args := []string{"Action=getSigninToken"}
-
-	paramSession := fmt.Sprintf("SessionDuration=%d", lifetime)
-	args = append(args, paramSession)
 
 	creds := r.translate(translations["console"])
 	jsonCreds, err := json.Marshal(creds)
@@ -126,10 +123,10 @@ func (r Role) toConsoleToken(lifetime int) (string, error) {
 }
 
 // ToConsoleURL returns a console URL for the role
-func (r Role) ToConsoleURL(lifetime int) (string, error) {
-	consoleToken, err := r.toConsoleToken(lifetime)
+func (r Role) ToConsoleURL() (string, error) {
+	consoleToken, err := r.toConsoleToken()
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	urlParts := []string{
 		"https://signin.aws.amazon.com/federation",
