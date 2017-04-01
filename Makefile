@@ -3,7 +3,7 @@
 PACKAGE = speculate
 NAMESPACE = github.com/akerl
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2>/dev/null)
-GOPATH = $(CURDIR)/.gopath
+export GOPATH = $(CURDIR)/.gopath
 BIN = $(GOPATH)/bin
 BASE = $(GOPATH)/src/$(NAMESPACE)/$(PACKAGE)
 GOFILES = $(shell find . -type f -name '*.go' ! -path './.*' ! -path './vendor/*')
