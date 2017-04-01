@@ -17,7 +17,7 @@ GOVEND = $(BIN)/govend
 
 build: deps $(GOX) fmt lint test
 	$(GOX) \
-		-ldflags '-X $(NAMESPACE)/utils.Version=$(VERSION)' \
+		-ldflags '-X $(NAMESPACE)/$(PACKAGE)/utils.Version=$(VERSION)' \
 		-gocmd="$(GO)" \
 		-output="bin/$(PACKAGE)_{{.OS}}" \
 		-os="darwin linux" \
