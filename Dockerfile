@@ -7,6 +7,6 @@ RUN curl -sLo /opt/go.tar.gz https://storage.googleapis.com/golang/go1.8.src.tar
     tar -xvf /opt/go.tar.gz -C /opt && \
     cd /opt/go && \
     patch -p1 < /opt/x509.patch && \
-    GOROOT_BOOTSTRAP=/usr/lib/go ./src/buildall.bash 'linux/amd64'
+    cd src && \
+    GOROOT_BOOTSTRAP=/usr/lib/go ./buildall.bash 'linux/amd64'
 RUN ln -vs /opt/go/bin/{go,gofmt} /usr/local/bin/
-    
