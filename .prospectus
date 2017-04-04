@@ -1,0 +1,16 @@
+item do
+  name 'speculate::golang'
+
+  expected do
+    github_tag
+    repo 'golang/go'
+    regex /^go([\d.]+)$/
+    filter /^go[\d.]+$/
+  end
+
+  actual do
+    grep
+    file 'Dockerfile'
+    regex /^ENV GO_VERSION ([\d.]+)$/
+  end
+end
