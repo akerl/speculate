@@ -9,11 +9,12 @@ import (
 )
 
 func consoleRunner(cmd *cobra.Command, args []string) error {
-	role, err := utils.NewRoleFromEnv()
+	creds := utils.Creds{}
+	err := creds.NewFromEnv()
 	if err != nil {
 		return err
 	}
-	url, err := role.ToConsoleURL()
+	url, err := creds.ToConsoleURL()
 	if err != nil {
 		return err
 	}

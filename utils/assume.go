@@ -64,15 +64,16 @@ func (a *Assumption) ParseAssumeFlags(cmd *cobra.Command) error {
 }
 
 // AssumeRole actions a role assumption object
-func (a *Assumption) AssumeRole() (Role, error) {
+func (a *Assumption) AssumeRole() (Creds, error) {
+	creds := Creds{}
 	arn, err := API.RoleArn(a.RoleName, a.AccountID)
 	if err != nil {
-		return Role{}, err
+		return creds, err
 	}
 	if a.SessionName == "" {
 		a.SessionName, err = API.SessionName()
 		if err != nil {
-			return Role{}, err
+			return creds, err
 		}
 	}
 
@@ -85,20 +86,20 @@ func (a *Assumption) AssumeRole() (Role, error) {
 		params.Policy = aws.String(a.Policy)
 	}
 	if err := configureMfa(a, params); err != nil {
-		return Role{}, err
+		return creds, err
 	}
 
 	client := API.Client()
 	resp, err := client.AssumeRole(params)
 	if err != nil {
-		return Role{}, err
+		return creds, err
 	}
 
-	creds := resp.Credentials
-	newRole := Role{
-		AccessKey:    *creds.AccessKeyId,
-		SecretKey:    *creds.SecretAccessKey,
-		SessionToken: *creds.SessionToken,
-	}
-	return newRole, nil
+	respCreds := resp.Credentials
+	creds.New(map[string]string{
+		"AccessKey":    *respCreds.AccessKeyId,
+		"SecretKey":    *respCreds.SecretAccessKey,
+		"SessionToken": *respCreds.SessionToken,
+	})
+	return creds, nil
 }

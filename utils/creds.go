@@ -11,9 +11,32 @@ import (
 	"strings"
 )
 
-// Role defines a set of credentials for the AWS API
-type Role struct {
+type Creds struct {
 	AccessKey, SecretKey, SessionToken string
+}
+
+func (c *Creds) New(argCreds map[string]string) error {
+	required := []string{"AccessKey", "SecretKey", "SessionToken"}
+	for _, key := range required {
+		elem, ok := argCreds[key]
+		if !ok || elem == "" {
+			return fmt.Errorf("Missing required key for Creds: %s", key)
+		}
+	}
+	c.AccessKey = argCreds["AccessKey"]
+	c.SecretKey = argCreds["SecretKey"]
+	c.SessionToken = argCreds["SessionToken"]
+	return nil
+}
+
+func (c *Creds) NewFromEnv() error {
+	envCreds := make(map[string]string)
+	for k, v := range translations["envvar"] {
+		if envCreds[v] == "" {
+			envCreds[v] = os.Getenv(k)
+		}
+	}
+	return c.New(envCreds)
 }
 
 var translations = map[string]map[string]string{
@@ -30,44 +53,16 @@ var translations = map[string]map[string]string{
 	},
 }
 
-// NewRole creates a new Role object from provided credentials
-func NewRole(creds map[string]string) (Role, error) {
-	required := []string{"AccessKey", "SecretKey", "SessionToken"}
-	for _, key := range required {
-		elem, ok := creds[key]
-		if !ok || elem == "" {
-			return Role{}, fmt.Errorf("Missing required key for Role: %s", key)
-		}
-	}
-	role := Role{
-		AccessKey:    creds["AccessKey"],
-		SecretKey:    creds["SecretKey"],
-		SessionToken: creds["SessionToken"],
-	}
-	return role, nil
-}
-
-// NewRoleFromEnv creates a new Role object using credentials from the environment
-func NewRoleFromEnv() (Role, error) {
-	creds := make(map[string]string)
-	for k, v := range translations["envvar"] {
-		if creds[v] == "" {
-			creds[v] = os.Getenv(k)
-		}
-	}
-	return NewRole(creds)
-}
-
-func (r Role) toMap() map[string]string {
+func (c Creds) toMap() map[string]string {
 	return map[string]string{
-		"AccessKey":    r.AccessKey,
-		"SecretKey":    r.SecretKey,
-		"SessionToken": r.SessionToken,
+		"AccessKey":    c.AccessKey,
+		"SecretKey":    c.SecretKey,
+		"SessionToken": c.SessionToken,
 	}
 }
 
-func (r Role) translate(dictionary map[string]string) map[string]string {
-	old := r.toMap()
+func (c Creds) translate(dictionary map[string]string) map[string]string {
+	old := c.toMap()
 	new := make(map[string]string)
 	for k, v := range dictionary {
 		new[k] = old[v]
@@ -76,10 +71,10 @@ func (r Role) translate(dictionary map[string]string) map[string]string {
 }
 
 // ToEnvVars returns environment variables suitable for eval-ing into the shell
-func (r Role) ToEnvVars() []string {
-	creds := r.translate(translations["envvar"])
+func (c Creds) ToEnvVars() []string {
+	envCreds := c.translate(translations["envvar"])
 	var res []string
-	for k, v := range creds {
+	for k, v := range envCreds {
 		res = append(res, fmt.Sprintf("export %s=%s", k, v))
 	}
 	sort.Strings(res)
@@ -92,11 +87,11 @@ type consoleTokenResponse struct {
 	SigninToken string
 }
 
-func (r Role) toConsoleToken() (string, error) {
+func (c Creds) toConsoleToken() (string, error) {
 	args := []string{"Action=getSigninToken"}
 
-	creds := r.translate(translations["console"])
-	jsonCreds, err := json.Marshal(creds)
+	consoleCreds := c.translate(translations["console"])
+	jsonCreds, err := json.Marshal(consoleCreds)
 	if err != nil {
 		return "", err
 	}
@@ -123,8 +118,8 @@ func (r Role) toConsoleToken() (string, error) {
 }
 
 // ToConsoleURL returns a console URL for the role
-func (r Role) ToConsoleURL() (string, error) {
-	consoleToken, err := r.toConsoleToken()
+func (c Creds) ToConsoleURL() (string, error) {
+	consoleToken, err := c.toConsoleToken()
 	if err != nil {
 		return "", err
 	}
