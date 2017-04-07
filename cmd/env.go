@@ -9,20 +9,27 @@ import (
 )
 
 func envRunner(cmd *cobra.Command, args []string) error {
-	assumption := utils.Assumption{}
-	if len(args) < 1 {
-		return fmt.Errorf("No role name provided")
+	var executor utils.CredsExecutor
+	var err error
+
+	switch len(args) {
+	case 0:
+		executor = &utils.Signin{}
+	case 1:
+		executor = &utils.Assumption{RoleName: args[0]}
+	default:
+		return fmt.Errorf("Too many args provided. Check --help for more info")
 	}
-	assumption.RoleName = args[0]
-	err := assumption.ParseAssumeFlags(cmd)
+
+	err = executor.ParseFlags(cmd)
 	if err != nil {
 		return err
 	}
-	role, err := assumption.AssumeRole()
+	creds, err := executor.Execute()
 	if err != nil {
 		return err
 	}
-	for _, line := range role.ToEnvVars() {
+	for _, line := range creds.ToEnvVars() {
 		fmt.Println(line)
 	}
 	return nil
@@ -36,5 +43,10 @@ var envCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(envCmd)
-	utils.AddAssumeFlags(envCmd)
+	envCmd.Flags().StringP("account", "a", "", "Account ID to assume role on (defaults to source account")
+	envCmd.Flags().StringP("session", "s", "", "Set session name for assumed role (defaults to origin user name)")
+	envCmd.Flags().Int64P("lifetime", "l", 3600, "Set lifetime of credentials in seconds (defaults to 3600 seconds / 1 hour, min 900, max 3600)")
+	envCmd.Flags().String("policy", "", "Set a IAM policy in JSON for the assumed credentials")
+	envCmd.Flags().BoolP("mfa", "m", false, "Use MFA when assuming role")
+	envCmd.Flags().String("mfacode", "", "Code to use for MFA")
 }

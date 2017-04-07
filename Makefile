@@ -1,4 +1,4 @@
-.PHONY: default build clean lint fmt test deps
+.PHONY: default build clean lint fmt test deps source
 
 PACKAGE = speculate
 NAMESPACE = github.com/akerl
@@ -15,13 +15,14 @@ GOX = $(BIN)/gox
 GOLINT = $(BIN)/golint
 GOVEND = $(BIN)/govend
 
-build: deps $(GOX) fmt lint test
+build: source deps $(GOX) fmt lint test
 	$(GOX) \
 		-ldflags '-X $(NAMESPACE)/$(PACKAGE)/utils.Version=$(VERSION)' \
 		-gocmd="$(GO)" \
 		-output="bin/$(PACKAGE)_{{.OS}}" \
 		-os="darwin linux" \
 		-arch="amd64"
+	@echo "Build completed"
 
 clean:
 	rm -rf $(GOPATH) bin
@@ -45,7 +46,9 @@ deps: $(BASE) $(GOVEND)
 
 $(BASE):
 	mkdir -p $(dir $@)
-	rsync -ax --exclude '.gopath' --exclude '.git' $(CURDIR)/ $@
+
+source: $(BASE)
+	rsync -ax --delete --exclude '.gopath' --exclude '.git' --exclude vendor $(CURDIR)/ $(BASE)
 
 $(GOLINT): $(BASE)
 	$(GO) get github.com/golang/lint/golint

@@ -9,12 +9,22 @@ import (
 	"os"
 	"sort"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
+// CredsExecutor defines the interface for requesting a new set of AWS creds
+type CredsExecutor interface {
+	ParseFlags(*cobra.Command) error
+	Execute() (Creds, error)
+}
+
+// Creds defines a set of AWS credentials
 type Creds struct {
 	AccessKey, SecretKey, SessionToken string
 }
 
+// New initializes credentials from a map
 func (c *Creds) New(argCreds map[string]string) error {
 	required := []string{"AccessKey", "SecretKey", "SessionToken"}
 	for _, key := range required {
@@ -29,6 +39,7 @@ func (c *Creds) New(argCreds map[string]string) error {
 	return nil
 }
 
+// NewFromEnv initializes credentials from the environment variables
 func (c *Creds) NewFromEnv() error {
 	envCreds := make(map[string]string)
 	for k, v := range translations["envvar"] {
