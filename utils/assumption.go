@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"fmt"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/spf13/cobra"
@@ -13,8 +11,8 @@ type Assumption struct {
 	RoleName    string
 	accountID   string
 	sessionName string
-	lifetime    int64
 	policy      string
+	Lifetime
 	Mfa
 }
 

@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +15,7 @@ type Signin struct {
 // ParseFlags for signin object
 func (s *Signin) ParseFlags(cmd *cobra.Command) error {
 	flags := cmd.Flags()
+	var err error
 	for _, key := range []string{"account", "session"} {
 		val, err := flags.GetString(key)
 		if err != nil {
@@ -26,14 +29,10 @@ func (s *Signin) ParseFlags(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
-	if a.lifetime < 900 || a.lifetime > 3600 {
-		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", a.lifetime)
+	if s.lifetime < 900 || s.lifetime > 3600 {
+		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", s.lifetime)
 	}
-	a.policy, err = flags.GetString("policy")
-	if err != nil {
-		return err
-	}
-	err := s.parseMfaFlags(cmd)
+	err = s.parseMfaFlags(cmd)
 	if err != nil {
 		return err
 	}
