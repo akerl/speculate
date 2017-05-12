@@ -1,6 +1,8 @@
 machine:
   services:
   - docker
+  environment:
+    PKGFORGE_STATEFILE: '/tmp/pkgforge'
 dependencies:
   override:
   - git submodule update --init
