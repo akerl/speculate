@@ -13,18 +13,18 @@ import (
 
 // Mfa object encapsulates the setup of MFA for API calls
 type Mfa struct {
-	useMfa  bool
-	mfaCode string
+	UseMfa  bool
+	MfaCode string
 }
 
 func (m *Mfa) parseMfaFlags(cmd *cobra.Command) error {
 	flags := cmd.Flags()
 	var err error
-	m.useMfa, err = flags.GetBool("mfa")
+	m.UseMfa, err = flags.GetBool("mfa")
 	if err != nil {
 		return err
 	}
-	m.mfaCode, err = flags.GetString("mfacode")
+	m.MfaCode, err = flags.GetString("MfaCode")
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func promptForMfa() (string, error) {
 }
 
 func (m *Mfa) configureMfa(params *sts.AssumeRoleInput) error {
-	if !m.useMfa && m.mfaCode == "" {
+	if !m.UseMfa && m.MfaCode == "" {
 		return nil
 	}
 	serialNumber, err := API.MfaArn()
@@ -51,12 +51,12 @@ func (m *Mfa) configureMfa(params *sts.AssumeRoleInput) error {
 		return err
 	}
 	params.SerialNumber = aws.String(serialNumber)
-	if m.mfaCode == "" {
-		m.mfaCode, err = promptForMfa()
+	if m.MfaCode == "" {
+		m.MfaCode, err = promptForMfa()
 		if err != nil {
 			return err
 		}
 	}
-	params.TokenCode = aws.String(m.mfaCode)
+	params.TokenCode = aws.String(m.MfaCode)
 	return nil
 }

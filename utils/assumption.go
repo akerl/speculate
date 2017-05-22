@@ -9,9 +9,9 @@ import (
 // Assumption describes the parameters that result in a Role
 type Assumption struct {
 	RoleName    string
-	accountID   string
-	sessionName string
-	policy      string
+	AccountID   string
+	SessionName string
+	Policy      string
 	Lifetime
 	Mfa
 }
@@ -20,15 +20,15 @@ type Assumption struct {
 func (a *Assumption) ParseFlags(cmd *cobra.Command) error {
 	flags := cmd.Flags()
 	var err error
-	a.accountID, err = flags.GetString("account")
+	a.AccountID, err = flags.GetString("account")
 	if err != nil {
 		return err
 	}
-	a.sessionName, err = flags.GetString("session")
+	a.SessionName, err = flags.GetString("session")
 	if err != nil {
 		return err
 	}
-	a.policy, err = flags.GetString("policy")
+	a.Policy, err = flags.GetString("policy")
 	if err != nil {
 		return err
 	}
@@ -46,12 +46,12 @@ func (a *Assumption) ParseFlags(cmd *cobra.Command) error {
 // Execute actions a role assumption object
 func (a *Assumption) Execute() (Creds, error) {
 	creds := Creds{}
-	arn, err := API.RoleArn(a.RoleName, a.accountID)
+	arn, err := API.RoleArn(a.RoleName, a.AccountID)
 	if err != nil {
 		return creds, err
 	}
-	if a.sessionName == "" {
-		a.sessionName, err = API.SessionName()
+	if a.SessionName == "" {
+		a.SessionName, err = API.SessionName()
 		if err != nil {
 			return creds, err
 		}
@@ -59,11 +59,11 @@ func (a *Assumption) Execute() (Creds, error) {
 
 	params := &sts.AssumeRoleInput{
 		RoleArn:         aws.String(arn),
-		RoleSessionName: aws.String(a.sessionName),
-		DurationSeconds: aws.Int64(a.lifetime),
+		RoleSessionName: aws.String(a.SessionName),
+		DurationSeconds: aws.Int64(a.LifetimeInt),
 	}
-	if a.policy != "" {
-		params.Policy = aws.String(a.policy)
+	if a.Policy != "" {
+		params.Policy = aws.String(a.Policy)
 	}
 	if err := a.configureMfa(params); err != nil {
 		return creds, err
