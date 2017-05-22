@@ -42,7 +42,7 @@ func (c *Creds) New(argCreds map[string]string) error {
 // NewFromEnv initializes credentials from the environment variables
 func (c *Creds) NewFromEnv() error {
 	envCreds := make(map[string]string)
-	for k, v := range translations["envvar"] {
+	for k, v := range Translations["envvar"] {
 		if envCreds[v] == "" {
 			envCreds[v] = os.Getenv(k)
 		}
@@ -50,7 +50,8 @@ func (c *Creds) NewFromEnv() error {
 	return c.New(envCreds)
 }
 
-var translations = map[string]map[string]string{
+// Translations defines common mappings for credential variables
+var Translations = map[string]map[string]string{
 	"envvar": {
 		"AWS_ACCESS_KEY_ID":     "AccessKey",
 		"AWS_SECRET_ACCESS_KEY": "SecretKey",
@@ -72,7 +73,8 @@ func (c Creds) toMap() map[string]string {
 	}
 }
 
-func (c Creds) translate(dictionary map[string]string) map[string]string {
+// Translate converts credentials based on a map of field names
+func (c Creds) Translate(dictionary map[string]string) map[string]string {
 	old := c.toMap()
 	new := make(map[string]string)
 	for k, v := range dictionary {
@@ -83,7 +85,7 @@ func (c Creds) translate(dictionary map[string]string) map[string]string {
 
 // ToEnvVars returns environment variables suitable for eval-ing into the shell
 func (c Creds) ToEnvVars() []string {
-	envCreds := c.translate(translations["envvar"])
+	envCreds := c.Translate(Translations["envvar"])
 	var res []string
 	for k, v := range envCreds {
 		res = append(res, fmt.Sprintf("export %s=%s", k, v))
@@ -101,7 +103,7 @@ type consoleTokenResponse struct {
 func (c Creds) toConsoleToken() (string, error) {
 	args := []string{"Action=getSigninToken"}
 
-	consoleCreds := c.translate(translations["console"])
+	consoleCreds := c.Translate(Translations["console"])
 	jsonCreds, err := json.Marshal(consoleCreds)
 	if err != nil {
 		return "", err
