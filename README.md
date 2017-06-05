@@ -1,3 +1,5 @@
+**Inactive Project:** I ported this tool to Golang, in [akerl/speculate](https://github.com/akerl/speculate) due to the benefits of having a zero-dep binary to assume roles from.
+
 speculate
 =========
 
