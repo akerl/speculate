@@ -1,16 +1,26 @@
+Prospectus.extra_dep('file', 'prospectus_circleci')
+
 item do
-  name 'speculate::golang'
+  noop
 
-  expected do
-    github_tag
-    repo 'golang/go'
-    regex /^go([\d.]+)$/
-    filter /^go[\d.]+$/
-  end
+  extend ProspectusCircleci::Build.new('akerl/speculate')
 
-  actual do
-    grep
-    file 'Dockerfile'
-    regex /^ENV GO_VERSION ([\d.]+)$/
+  deps do
+    item do
+      name 'golang'
+
+      expected do
+        github_tag
+        repo 'golang/go'
+        regex /^go([\d.]+)$/
+        filter /^go[\d.]+$/
+      end
+
+      actual do
+        grep
+        file 'Dockerfile'
+        regex /^ENV GO_VERSION ([\d.]+)$/
+      end
+    end
   end
 end
