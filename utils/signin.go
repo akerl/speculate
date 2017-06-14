@@ -38,5 +38,6 @@ func (s *Signin) ParseFlags(cmd *cobra.Command) error {
 
 // Execute actions the signin object
 func (s *Signin) Execute() (Creds, error) {
+	// TODO: implement signin support
 	return Creds{}, nil
 }
