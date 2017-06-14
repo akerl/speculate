@@ -24,7 +24,7 @@ func (m *Mfa) parseMfaFlags(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
-	m.MfaCode, err = flags.GetString("MfaCode")
+	m.MfaCode, err = flags.GetString("mfacode")
 	if err != nil {
 		return err
 	}
