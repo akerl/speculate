@@ -20,8 +20,9 @@ type api struct {
 // Client returns an API client for the STS API
 func (a api) Client() sts.STS {
 	if a.client == nil {
-		sess := session.Must(session.NewSession(&aws.Config{
-			CredentialsChainVerboseErrors: aws.Bool(true),
+		sess := session.Must(session.NewSessionWithOptions(session.Options{
+			Config:            aws.Config{CredentialsChainVerboseErrors: aws.Bool(true)},
+			SharedConfigState: session.SharedConfigEnable,
 		}))
 		a.client = sts.New(sess)
 	}
