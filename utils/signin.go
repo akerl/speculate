@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +18,7 @@ type Signin struct {
 func (s *Signin) ParseFlags(cmd *cobra.Command) error {
 	flags := cmd.Flags()
 	var err error
-	for _, key := range []string{"account", "session"} {
+	for _, key := range []string{"account", "session", "policy"} {
 		val, err := flags.GetString(key)
 		if err != nil {
 			return err
@@ -38,6 +40,25 @@ func (s *Signin) ParseFlags(cmd *cobra.Command) error {
 
 // Execute actions the signin object
 func (s *Signin) Execute() (Creds, error) {
-	// TODO: implement signin support
-	return Creds{}, nil
+	creds := Creds{}
+	params := &sts.GetSessionTokenInput{
+		DurationSeconds: aws.Int64(s.LifetimeInt),
+	}
+	if err := s.configureMfa(params); err != nil {
+		return creds, err
+	}
+
+	client := API.Client()
+	resp, err := client.GetSessionToken(params)
+	if err != nil {
+		return creds, err
+	}
+
+	respCreds := resp.Credentials
+	creds.New(map[string]string{
+		"AccessKey":    *respCreds.AccessKeyId,
+		"SecretKey":    *respCreds.SecretAccessKey,
+		"SessionToken": *respCreds.SessionToken,
+	})
+	return creds, nil
 }
