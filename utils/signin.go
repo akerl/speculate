@@ -41,6 +41,11 @@ func (s *Signin) ParseFlags(cmd *cobra.Command) error {
 // Execute actions the signin object
 func (s *Signin) Execute() (Creds, error) {
 	creds := Creds{}
+
+	if s.LifetimeInt == 0 {
+		s.LifetimeInt = 3600
+	}
+
 	params := &sts.GetSessionTokenInput{
 		DurationSeconds: aws.Int64(s.LifetimeInt),
 	}

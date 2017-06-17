@@ -57,6 +57,10 @@ func (a *Assumption) Execute() (Creds, error) {
 		}
 	}
 
+	if a.LifetimeInt == 0 {
+		a.LifetimeInt = 3600
+	}
+
 	params := &sts.AssumeRoleInput{
 		RoleArn:         aws.String(arn),
 		RoleSessionName: aws.String(a.SessionName),
