@@ -38,9 +38,14 @@ func (s *Signin) ParseFlags(cmd *cobra.Command) error {
 	return nil
 }
 
-// Execute actions the signin object
+// Execute actions the signin object with creds from the environment
 func (s *Signin) Execute() (Creds, error) {
-	creds := Creds{}
+	return s.ExecuteWithCreds(Creds{})
+}
+
+// ExecuteWithCreds actions the signin object with the provided creds
+func (s *Signin) ExecuteWithCreds(c Creds) (Creds, error) {
+	newCreds := Creds{}
 
 	if s.LifetimeInt == 0 {
 		s.LifetimeInt = 3600
@@ -50,20 +55,15 @@ func (s *Signin) Execute() (Creds, error) {
 		DurationSeconds: aws.Int64(s.LifetimeInt),
 	}
 	if err := s.configureMfa(params); err != nil {
-		return creds, err
+		return newCreds, err
 	}
 
-	client := API.Client()
+	client := API.ClientWithCreds(c)
 	resp, err := client.GetSessionToken(params)
 	if err != nil {
-		return creds, err
+		return newCreds, err
 	}
 
-	respCreds := resp.Credentials
-	creds.New(map[string]string{
-		"AccessKey":    *respCreds.AccessKeyId,
-		"SecretKey":    *respCreds.SecretAccessKey,
-		"SessionToken": *respCreds.SessionToken,
-	})
-	return creds, nil
+	err = newCreds.NewFromStsSdk(resp.Credentials)
+	return newCreds, err
 }

@@ -43,17 +43,22 @@ func (a *Assumption) ParseFlags(cmd *cobra.Command) error {
 	return nil
 }
 
-// Execute actions a role assumption object
+// Execute actions a role assumption object with creds from the environment
 func (a *Assumption) Execute() (Creds, error) {
-	creds := Creds{}
+	return a.ExecuteWithCreds(Creds{})
+}
+
+// ExecuteWithCreds actions a role assumption with provided creds
+func (a *Assumption) ExecuteWithCreds(c Creds) (Creds, error) {
+	newCreds := Creds{}
 	arn, err := API.RoleArn(a.RoleName, a.AccountID)
 	if err != nil {
-		return creds, err
+		return newCreds, err
 	}
 	if a.SessionName == "" {
 		a.SessionName, err = API.SessionName()
 		if err != nil {
-			return creds, err
+			return newCreds, err
 		}
 	}
 
@@ -70,20 +75,15 @@ func (a *Assumption) Execute() (Creds, error) {
 		params.Policy = aws.String(a.Policy)
 	}
 	if err := a.configureMfa(params); err != nil {
-		return creds, err
+		return newCreds, err
 	}
 
-	client := API.Client()
+	client := API.ClientWithCreds(c)
 	resp, err := client.AssumeRole(params)
 	if err != nil {
-		return creds, err
+		return newCreds, err
 	}
 
-	respCreds := resp.Credentials
-	creds.New(map[string]string{
-		"AccessKey":    *respCreds.AccessKeyId,
-		"SecretKey":    *respCreds.SecretAccessKey,
-		"SessionToken": *respCreds.SessionToken,
-	})
-	return creds, nil
+	err = newCreds.NewFromStsSdk(resp.Credentials)
+	return newCreds, err
 }

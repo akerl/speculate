@@ -13,34 +13,36 @@ import (
 var API = api{}
 
 type api struct {
-	client   *sts.STS
-	identity *sts.GetCallerIdentityOutput
+	// TODO: implement caching of client and identity
 }
 
 // Client returns an API client for the STS API
-func (a api) Client() sts.STS {
-	if a.client == nil {
-		sess := session.Must(session.NewSessionWithOptions(session.Options{
-			Config:            aws.Config{CredentialsChainVerboseErrors: aws.Bool(true)},
-			SharedConfigState: session.SharedConfigEnable,
-		}))
-		a.client = sts.New(sess)
+func (a api) Client() *sts.STS {
+	return a.client(Creds{})
+}
+
+// ClientWithCreds returns an API client using the provided creds
+func (a api) ClientWithCreds(c Creds) *sts.STS {
+	return a.client(c)
+}
+
+func (a api) client(c Creds) *sts.STS {
+	config := aws.NewConfig().WithCredentialsChainVerboseErrors(true)
+	if c.AccessKey != "" {
+		config.WithCredentials(c.ToSdk())
 	}
-	return *a.client
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config:            *config,
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+	return sts.New(sess)
 }
 
 // Identity returns the current user's information
 func (a api) Identity() (*sts.GetCallerIdentityOutput, error) {
-	if a.identity == nil {
-		params := &sts.GetCallerIdentityInput{}
-		client := a.Client()
-		resp, err := client.GetCallerIdentity(params)
-		if err != nil {
-			return nil, err
-		}
-		a.identity = resp
-	}
-	return a.identity, nil
+	params := &sts.GetCallerIdentityInput{}
+	client := a.Client()
+	return client.GetCallerIdentity(params)
 }
 
 // Partition returns the AWS partition for the user

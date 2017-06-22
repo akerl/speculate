@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +19,7 @@ import (
 type CredsExecutor interface {
 	ParseFlags(*cobra.Command) error
 	Execute() (Creds, error)
+	ExecuteWithCreds(Creds) (Creds, error)
 }
 
 // Creds defines a set of AWS credentials
@@ -37,6 +40,20 @@ func (c *Creds) New(argCreds map[string]string) error {
 	c.SecretKey = argCreds["SecretKey"]
 	c.SessionToken = argCreds["SessionToken"]
 	return nil
+}
+
+// NewFromStsSdk initializes a credential object from an AWS SDK Credentials object
+func (c *Creds) NewFromStsSdk(stsCreds *sts.Credentials) error {
+	return c.New(map[string]string{
+		"AccessKey":    *stsCreds.AccessKeyId,
+		"SecretKey":    *stsCreds.SecretAccessKey,
+		"SessionToken": *stsCreds.SessionToken,
+	})
+}
+
+// ToSdk returns an AWS SDK Credentials object
+func (c *Creds) ToSdk() *credentials.Credentials {
+	return credentials.NewStaticCredentials(c.AccessKey, c.SecretKey, c.SessionToken)
 }
 
 // NewFromEnv initializes credentials from the environment variables
