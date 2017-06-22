@@ -57,7 +57,7 @@ func (m *Mfa) configureMfa(params interface{}) error {
 	if !paramSerialNumber.IsValid() {
 		return fmt.Errorf("configureMfa called with struct lacking SerialNumber field")
 	}
-	paramSerialNumber.SetString(serialNumber)
+	paramSerialNumber.Set(reflect.ValueOf(&serialNumber))
 
 	if m.MfaCode == "" {
 		m.MfaCode, err = promptForMfa()
@@ -69,6 +69,6 @@ func (m *Mfa) configureMfa(params interface{}) error {
 	if !paramTokenCode.IsValid() {
 		return fmt.Errorf("configureMfa called with struct lacking TokenCode field")
 	}
-	paramTokenCode.SetString(m.MfaCode)
+	paramTokenCode.Set(reflect.ValueOf(&m.MfaCode))
 	return nil
 }
