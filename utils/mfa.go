@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/spf13/cobra"
 )
 
@@ -45,8 +46,9 @@ func (m *Mfa) configureSigninMfaParams(params *sts.GetSessionTokenInput) error {
 	if err != nil {
 		return err
 	}
-	params.SerialNumber = serialNumber
-	params.TokenCode = tokenCode
+	params.SerialNumber = &serialNumber
+	params.TokenCode = &tokenCode
+	return nil
 }
 
 func (m *Mfa) configureAssumptionMfaParams(params *sts.AssumeRoleInput) error {
@@ -54,24 +56,25 @@ func (m *Mfa) configureAssumptionMfaParams(params *sts.AssumeRoleInput) error {
 	if err != nil {
 		return err
 	}
-	params.SerialNumber = serialNumber
-	params.TokenCode = tokenCode
+	params.SerialNumber = &serialNumber
+	params.TokenCode = &tokenCode
+	return nil
 }
 
 func (m *Mfa) mfaParams() (string, string, error) {
 	if !m.UseMfa && m.MfaCode == "" {
-		return nil
+		return "", "", nil
 	}
 
 	serialNumber, err := API.MfaArn()
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
 	if m.MfaCode == "" {
 		m.MfaCode, err = promptForMfa()
 		if err != nil {
-			return err
+			return "", "", err
 		}
 	}
 	return serialNumber, m.MfaCode, nil
