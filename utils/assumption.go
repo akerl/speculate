@@ -74,7 +74,7 @@ func (a *Assumption) ExecuteWithCreds(c Creds) (Creds, error) {
 	if a.Policy != "" {
 		params.Policy = aws.String(a.Policy)
 	}
-	if err := a.configureMfa(params); err != nil {
+	if err := a.configureAssumptionMfaParams(params); err != nil {
 		return newCreds, err
 	}
 

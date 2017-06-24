@@ -54,7 +54,7 @@ func (s *Signin) ExecuteWithCreds(c Creds) (Creds, error) {
 	params := &sts.GetSessionTokenInput{
 		DurationSeconds: aws.Int64(s.LifetimeInt),
 	}
-	if err := s.configureMfa(params); err != nil {
+	if err := s.configureSigninMfaParams(params); err != nil {
 		return newCreds, err
 	}
 

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -41,23 +40,33 @@ func promptForMfa() (string, error) {
 	return mfa, nil
 }
 
-// Must be called with an aws Input struct with SerialNumber and SetTokenCode fields
-func (m *Mfa) configureMfa(params interface{}) error {
+func (m *Mfa) configureSigninMfaParams(params *sts.GetSessionTokenInput) error {
+	serialNumber, tokenCode, err := m.mfaParams()
+	if err != nil {
+		return err
+	}
+	params.SerialNumber = serialNumber
+	params.TokenCode = tokenCode
+}
+
+func (m *Mfa) configureAssumptionMfaParams(params *sts.AssumeRoleInput) error {
+	serialNumber, tokenCode, err := m.mfaParams()
+	if err != nil {
+		return err
+	}
+	params.SerialNumber = serialNumber
+	params.TokenCode = tokenCode
+}
+
+func (m *Mfa) mfaParams() (string, string, error) {
 	if !m.UseMfa && m.MfaCode == "" {
 		return nil
 	}
-
-	stype := reflect.ValueOf(params).Elem()
 
 	serialNumber, err := API.MfaArn()
 	if err != nil {
 		return err
 	}
-	paramSerialNumber := stype.FieldByName("SerialNumber")
-	if !paramSerialNumber.IsValid() {
-		return fmt.Errorf("configureMfa called with struct lacking SerialNumber field")
-	}
-	paramSerialNumber.Set(reflect.ValueOf(&serialNumber))
 
 	if m.MfaCode == "" {
 		m.MfaCode, err = promptForMfa()
@@ -65,10 +74,5 @@ func (m *Mfa) configureMfa(params interface{}) error {
 			return err
 		}
 	}
-	paramTokenCode := stype.FieldByName("TokenCode")
-	if !paramTokenCode.IsValid() {
-		return fmt.Errorf("configureMfa called with struct lacking TokenCode field")
-	}
-	paramTokenCode.Set(reflect.ValueOf(&m.MfaCode))
-	return nil
+	return serialNumber, m.MfaCode, nil
 }
