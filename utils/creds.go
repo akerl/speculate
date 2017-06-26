@@ -24,7 +24,7 @@ type CredsExecutor interface {
 
 // Creds defines a set of AWS credentials
 type Creds struct {
-	AccessKey, SecretKey, SessionToken string
+	AccessKey, SecretKey, SessionToken, Region string
 }
 
 // New initializes credentials from a map
@@ -111,14 +111,14 @@ func (c Creds) ToEnvVars() []string {
 	return res
 }
 
-var consoleTokenURL = "https://signin.aws.amazon.com/federation"
+var consoleTokenURL = "https://signin.%s.com"
 
 type consoleTokenResponse struct {
 	SigninToken string
 }
 
 func (c Creds) toConsoleToken() (string, error) {
-	args := []string{"Action=getSigninToken"}
+	args := []string{"?Action=getSigninToken"}
 
 	consoleCreds := c.Translate(Translations["console"])
 	jsonCreds, err := json.Marshal(consoleCreds)
@@ -130,9 +130,15 @@ func (c Creds) toConsoleToken() (string, error) {
 	args = append(args, paramCreds)
 
 	argString := strings.Join(args, "&")
-	url := strings.Join([]string{consoleTokenURL, argString}, "?")
+	namespace, err := getNamespace()
+	if err != nil {
+		return "", err
+	}
+	baseURL := fmt.Sprintf(consoleTokenURL, namespace)
+	url := strings.Join([]string{baseURL, "/federation", argString}, "")
 
 	resp, err := http.Get(url)
+
 	if err != nil {
 		return "", err
 	}
@@ -153,15 +159,50 @@ func (c Creds) ToConsoleURL() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	namespace, err := getNamespace()
+	if err != nil {
+		return "", err
+	}
+	baseURL := fmt.Sprintf(consoleTokenURL, namespace)
+	targetURL := fmt.Sprintf("https://console.%s.com/", namespace)
 	urlParts := []string{
-		"https://signin.aws.amazon.com/federation",
+		baseURL,
+		"/federation",
 		"?Action=login",
 		"&Issuer=",
 		"&Destination=",
-		url.QueryEscape("https://console.aws.amazon.com/"),
+		url.QueryEscape(targetURL),
 		"&SigninToken=",
 		consoleToken,
 	}
 	urlString := strings.Join(urlParts, "")
 	return urlString, nil
+}
+
+// ToSignoutURL returns a signout URL for the console
+func (c Creds) ToSignoutURL() (string, error) {
+	namespace, err := getNamespace()
+	if err != nil {
+		return "", err
+	}
+	baseURL := fmt.Sprintf(consoleTokenURL, namespace)
+	url := strings.Join([]string{baseURL, "/oauth?Action=logout"}, "")
+	return url, nil
+}
+
+var namespaces = map[string]string{
+	"aws":     "aws.amazon",
+	"aws-gov": "amazonaws-us-gov",
+}
+
+func getNamespace() (string, error) {
+	partition, err := API.Partition()
+	if err != nil {
+		return "", err
+	}
+	result, ok := namespaces[partition]
+	if ok {
+		return result, nil
+	}
+	return "", fmt.Errorf("Unknown partition: %s", partition)
 }
