@@ -191,8 +191,8 @@ func (c Creds) ToSignoutURL() (string, error) {
 }
 
 var namespaces = map[string]string{
-	"aws":     "aws.amazon",
-	"aws-gov": "amazonaws-us-gov",
+	"aws":        "aws.amazon",
+	"aws-us-gov": "amazonaws-us-gov",
 }
 
 func getNamespace() (string, error) {
