@@ -42,6 +42,9 @@ func promptForMfa() (string, error) {
 }
 
 func (m *Mfa) configureSigninMfaParams(params *sts.GetSessionTokenInput) error {
+	if !m.UseMfa && m.MfaCode == "" {
+		return nil
+	}
 	serialNumber, tokenCode, err := m.mfaParams()
 	if err != nil {
 		return err
@@ -52,6 +55,9 @@ func (m *Mfa) configureSigninMfaParams(params *sts.GetSessionTokenInput) error {
 }
 
 func (m *Mfa) configureAssumptionMfaParams(params *sts.AssumeRoleInput) error {
+	if !m.UseMfa && m.MfaCode == "" {
+		return nil
+	}
 	serialNumber, tokenCode, err := m.mfaParams()
 	if err != nil {
 		return err
@@ -62,10 +68,6 @@ func (m *Mfa) configureAssumptionMfaParams(params *sts.AssumeRoleInput) error {
 }
 
 func (m *Mfa) mfaParams() (string, string, error) {
-	if !m.UseMfa && m.MfaCode == "" {
-		return "", "", nil
-	}
-
 	serialNumber, err := API.MfaArn()
 	if err != nil {
 		return "", "", err
