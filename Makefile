@@ -13,7 +13,7 @@ GO = go
 GOFMT = gofmt
 GOX = $(BIN)/gox
 GOLINT = $(BIN)/golint
-GOVEND = $(BIN)/govend
+GODEP = $(BIN)/dep
 
 build: source deps $(GOX) fmt lint test
 	$(GOX) \
@@ -41,8 +41,8 @@ fmt:
 test: deps
 	cd $(BASE) && $(GO) test $(GOPACKAGES)
 
-deps: $(BASE) $(GOVEND)
-	cd $(BASE) && $(GOVEND)
+deps: $(BASE) $(GODEP)
+	cd $(BASE) && $(GODEP) ensure
 
 $(BASE):
 	mkdir -p $(dir $@)
@@ -56,5 +56,5 @@ $(GOLINT): $(BASE)
 $(GOX): $(BASE)
 	$(GO) get github.com/mitchellh/gox
 
-$(GOVEND): $(BASE)
-	$(GO) get github.com/govend/govend
+$(GODEP): $(BASE)
+	$(GO) get github.com/golang/dep/cmd/dep
