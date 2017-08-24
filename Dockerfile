@@ -2,7 +2,7 @@ FROM dock0/pkgforge
 RUN pacman -S --needed --noconfirm go rsync
 # Patching for https://go-review.googlesource.com/c/36941/
 ENV PATCH_URL https://go-review.googlesource.com/changes/36941/revisions/1/patch?download
-ENV GO_VERSION 1.8.3
+ENV GO_VERSION 1.9
 ENV GO_URL https://storage.googleapis.com/golang/go${GO_VERSION}.src.tar.gz
 RUN curl -sLo /opt/x509.patch.b64 $PATCH_URL && \
     base64 -d /opt/x509.patch.b64 > /opt/x509.patch && \
