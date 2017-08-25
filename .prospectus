@@ -4,23 +4,4 @@ item do
   noop
 
   extend ProspectusCircleci::Build.new('akerl/speculate')
-
-  deps do
-    item do
-      name 'golang'
-
-      expected do
-        github_tag
-        repo 'golang/go'
-        regex /^go([\d.]+)$/
-        filter /^go[\d.]+$/
-      end
-
-      actual do
-        grep
-        file 'Dockerfile'
-        regex /^ENV GO_VERSION ([\d.]+)$/
-      end
-    end
-  end
 end
