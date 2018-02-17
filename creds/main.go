@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
@@ -21,24 +22,26 @@ type Creds struct {
 }
 
 // New initializes credentials from a map
-func (c *Creds) New(argCreds map[string]string) error {
+func New(argCreds map[string]string) (Creds, error) {
 	required := []string{"AccessKey", "SecretKey", "SessionToken"}
 	for _, key := range required {
 		elem, ok := argCreds[key]
 		if !ok || elem == "" {
-			return fmt.Errorf("Missing required key for Creds: %s", key)
+			return Creds{}, fmt.Errorf("Missing required key for Creds: %s", key)
 		}
 	}
-	c.AccessKey = argCreds["AccessKey"]
-	c.SecretKey = argCreds["SecretKey"]
-	c.SessionToken = argCreds["SessionToken"]
-	c.Region = argCreds["Region"]
-	return nil
+	c := Creds{
+		AccessKey:    argCreds["AccessKey"],
+		SecretKey:    argCreds["SecretKey"],
+		SessionToken: argCreds["SessionToken"],
+		Region:       argCreds["Region"],
+	}
+	return c, nil
 }
 
 // NewFromStsSdk initializes a credential object from an AWS SDK Credentials object
-func (c *Creds) NewFromStsSdk(stsCreds *sts.Credentials) error {
-	return c.New(map[string]string{
+func NewFromStsSdk(stsCreds *sts.Credentials) (Creds, error) {
+	return New(map[string]string{
 		"AccessKey":    *stsCreds.AccessKeyId,
 		"SecretKey":    *stsCreds.SecretAccessKey,
 		"SessionToken": *stsCreds.SessionToken,
@@ -46,14 +49,15 @@ func (c *Creds) NewFromStsSdk(stsCreds *sts.Credentials) error {
 }
 
 // NewFromEnv initializes credentials from the environment variables
-func (c *Creds) NewFromEnv() error {
+func NewFromEnv() (Creds, error) {
+	// TODO: Handle region env vars here
 	envCreds := make(map[string]string)
 	for k, v := range Translations["envvar"] {
 		if envCreds[v] == "" {
 			envCreds[v] = os.Getenv(k)
 		}
 	}
-	return c.New(envCreds)
+	return New(envCreds)
 }
 
 // Translations defines common mappings for credential variables
@@ -184,9 +188,12 @@ func (c Creds) ToSignoutURL() (string, error) {
 	return url, nil
 }
 
-func (c Creds) stsClient() *sts.STS {
+// Client returns an AWS STS client for these creds
+func (c Creds) Client() *sts.STS {
 	config := aws.NewConfig().WithCredentialsChainVerboseErrors(true)
-	config.WithCredentials(c.ToSdk())
+	if c.AccessKey != "" {
+		config.WithCredentials(c.ToSdk())
+	}
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		Config:            *config,
 		SharedConfigState: session.SharedConfigEnable,
@@ -196,7 +203,7 @@ func (c Creds) stsClient() *sts.STS {
 
 func (c Creds) identity() (*sts.GetCallerIdentityOutput, error) {
 	params := &sts.GetCallerIdentityInput{}
-	client := c.stsClient()
+	client := c.Client()
 	return client.GetCallerIdentity(params)
 }
 
@@ -252,6 +259,9 @@ func (c Creds) SessionName() (string, error) {
 
 // NextRoleArn returns the new role's ARN
 func (c Creds) NextRoleArn(role, accountID string) (string, error) {
+	if role == "" {
+		return "", fmt.Errorf("Role name cannot be empty")
+	}
 	identity, err := c.identity()
 	if err != nil {
 		return "", err

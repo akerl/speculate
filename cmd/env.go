@@ -6,6 +6,7 @@ import (
 	"github.com/akerl/speculate/executors"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 func envRunner(cmd *cobra.Command, args []string) error {
@@ -14,17 +15,21 @@ func envRunner(cmd *cobra.Command, args []string) error {
 
 	switch len(args) {
 	case 0:
-		e = &executors.Signin{}
+		exec = &executors.Signin{}
 	case 1:
-		e = &executors.Assumption{RoleName: args[0]}
+		exec = &executors.Assumption{}
+		if err := exec.SetRoleName(args[0]); err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("Too many args provided. Check --help for more info")
 	}
 
-	err = exec.ParseFlags(cmd)
-	if err != nil {
+	flags := cmd.Flags()
+	if err := parseFlags(exec, flags); err != nil {
 		return err
 	}
+
 	creds, err := exec.Execute()
 	if err != nil {
 		return err
@@ -49,4 +54,54 @@ func init() {
 	envCmd.Flags().String("policy", "", "Set a IAM policy in JSON for the assumed credentials")
 	envCmd.Flags().BoolP("mfa", "m", false, "Use MFA when assuming role")
 	envCmd.Flags().String("mfacode", "", "Code to use for MFA")
+}
+
+func parseFlags(exec executors.Executor, flags *pflag.FlagSet) error {
+	if val, err := flags.GetString("account"); err != nil {
+		return err
+	} else if val != "" {
+		if err := exec.SetAccountID(val); err != nil {
+			return err
+		}
+	}
+
+	if val, err := flags.GetString("session"); err != nil {
+		return err
+	} else if val != "" {
+		if err := exec.SetSessionName(val); err != nil {
+			return err
+		}
+	}
+
+	if val, err := flags.GetString("policy"); err != nil {
+		return err
+	} else if val != "" {
+		if err := exec.SetPolicy(val); err != nil {
+			return err
+		}
+	}
+
+	if val, err := flags.GetInt64("lifetime"); err != nil {
+		return err
+	} else if val != 0 {
+		if err := exec.SetLifetime(val); err != nil {
+			return err
+		}
+	}
+
+	if val, err := flags.GetBool("mfa"); err != nil {
+		return err
+	} else if err := exec.SetMfa(val); err != nil {
+		return err
+	}
+
+	if val, err := flags.GetString("mfacode"); err != nil {
+		return err
+	} else if val != "" {
+		if err := exec.SetMfaCode(val); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
