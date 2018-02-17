@@ -3,29 +3,29 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/akerl/speculate/utils"
+	"github.com/akerl/speculate/executors"
 
 	"github.com/spf13/cobra"
 )
 
 func envRunner(cmd *cobra.Command, args []string) error {
-	var executor utils.CredsExecutor
+	var exec executors.Executor
 	var err error
 
 	switch len(args) {
 	case 0:
-		executor = &utils.Signin{}
+		e = &executors.Signin{}
 	case 1:
-		executor = &utils.Assumption{RoleName: args[0]}
+		e = &executors.Assumption{RoleName: args[0]}
 	default:
 		return fmt.Errorf("Too many args provided. Check --help for more info")
 	}
 
-	err = executor.ParseFlags(cmd)
+	err = exec.ParseFlags(cmd)
 	if err != nil {
 		return err
 	}
-	creds, err := executor.Execute()
+	creds, err := exec.Execute()
 	if err != nil {
 		return err
 	}

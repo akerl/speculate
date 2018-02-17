@@ -3,18 +3,17 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/akerl/speculate/utils"
+	"github.com/akerl/speculate/creds"
 
 	"github.com/spf13/cobra"
 )
 
 func consoleRunner(cmd *cobra.Command, args []string) error {
-	creds := utils.Creds{}
-	err := creds.NewFromEnv()
+	c, err := creds.NewFromEnv()
 	if err != nil {
 		return err
 	}
-	url, err := creds.ToConsoleURL()
+	url, err := c.ToConsoleURL()
 	if err != nil {
 		return err
 	}

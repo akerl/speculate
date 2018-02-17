@@ -1,4 +1,4 @@
-package utils
+package creds
 
 import (
 	"encoding/json"
@@ -11,16 +11,9 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
-	"github.com/spf13/cobra"
 )
-
-// CredsExecutor defines the interface for requesting a new set of AWS creds
-type CredsExecutor interface {
-	ParseFlags(*cobra.Command) error
-	Execute() (Creds, error)
-	ExecuteWithCreds(Creds) (Creds, error)
-}
 
 // Creds defines a set of AWS credentials
 type Creds struct {
@@ -39,6 +32,7 @@ func (c *Creds) New(argCreds map[string]string) error {
 	c.AccessKey = argCreds["AccessKey"]
 	c.SecretKey = argCreds["SecretKey"]
 	c.SessionToken = argCreds["SessionToken"]
+	c.Region = argCreds["Region"]
 	return nil
 }
 
@@ -49,11 +43,6 @@ func (c *Creds) NewFromStsSdk(stsCreds *sts.Credentials) error {
 		"SecretKey":    *stsCreds.SecretAccessKey,
 		"SessionToken": *stsCreds.SessionToken,
 	})
-}
-
-// ToSdk returns an AWS SDK Credentials object
-func (c *Creds) ToSdk() *credentials.Credentials {
-	return credentials.NewStaticCredentials(c.AccessKey, c.SecretKey, c.SessionToken)
 }
 
 // NewFromEnv initializes credentials from the environment variables
@@ -100,6 +89,11 @@ func (c Creds) Translate(dictionary map[string]string) map[string]string {
 	return new
 }
 
+// ToSdk returns an AWS SDK Credentials object
+func (c *Creds) ToSdk() *credentials.Credentials {
+	return credentials.NewStaticCredentials(c.AccessKey, c.SecretKey, c.SessionToken)
+}
+
 // ToEnvVars returns environment variables suitable for eval-ing into the shell
 func (c Creds) ToEnvVars() []string {
 	envCreds := c.Translate(Translations["envvar"])
@@ -130,7 +124,7 @@ func (c Creds) toConsoleToken() (string, error) {
 	args = append(args, paramCreds)
 
 	argString := strings.Join(args, "&")
-	namespace, err := getNamespace()
+	namespace, err := c.namespace()
 	if err != nil {
 		return "", err
 	}
@@ -159,7 +153,7 @@ func (c Creds) ToConsoleURL() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	namespace, err := getNamespace()
+	namespace, err := c.namespace()
 	if err != nil {
 		return "", err
 	}
@@ -181,7 +175,7 @@ func (c Creds) ToConsoleURL() (string, error) {
 
 // ToSignoutURL returns a signout URL for the console
 func (c Creds) ToSignoutURL() (string, error) {
-	namespace, err := getNamespace()
+	namespace, err := c.namespace()
 	if err != nil {
 		return "", err
 	}
@@ -190,13 +184,33 @@ func (c Creds) ToSignoutURL() (string, error) {
 	return url, nil
 }
 
-var namespaces = map[string]string{
-	"aws":        "aws.amazon",
-	"aws-us-gov": "amazonaws-us-gov",
+func (c Creds) stsClient() *sts.STS {
+	config := aws.NewConfig().WithCredentialsChainVerboseErrors(true)
+	config.WithCredentials(c.ToSdk())
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config:            *config,
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+	return sts.New(sess)
 }
 
-func getNamespace() (string, error) {
-	partition, err := API.Partition()
+func (c Creds) identity() (*sts.GetCallerIdentityOutput, error) {
+	params := &sts.GetCallerIdentityInput{}
+	client := c.stsClient()
+	return client.GetCallerIdentity(params)
+}
+
+func (c Creds) partition() (string, error) {
+	identity, err := c.identity()
+	if err != nil {
+		return "", err
+	}
+	pieces := strings.Split(*identity.Arn, ":")
+	return pieces[1], nil
+}
+
+func (c Creds) namespace() (string, error) {
+	partition, err := c.partition()
 	if err != nil {
 		return "", err
 	}
@@ -205,4 +219,50 @@ func getNamespace() (string, error) {
 		return result, nil
 	}
 	return "", fmt.Errorf("Unknown partition: %s", partition)
+}
+
+var namespaces = map[string]string{
+	"aws":        "aws.amazon",
+	"aws-us-gov": "amazonaws-us-gov",
+}
+
+// MfaArn returns the user's virtual MFA token ARN
+func (c Creds) MfaArn() (string, error) {
+	identity, err := c.identity()
+	if err != nil {
+		return "", err
+	}
+	if strings.Index(*identity.Arn, ":user/") == -1 {
+		return "", fmt.Errorf("Failed to parse MFA ARN for non-user: %s", identity.Arn)
+	}
+	mfaArn := strings.Replace(*identity.Arn, ":user/", ":mfa/", 1)
+	return mfaArn, nil
+}
+
+// SessionName returns the default session name
+func (c Creds) SessionName() (string, error) {
+	identity, err := c.identity()
+	if err != nil {
+		return "", err
+	}
+	arnChunks := strings.Split(*identity.Arn, "/")
+	oldName := arnChunks[len(arnChunks)-1]
+	return oldName, nil
+}
+
+// NextRoleArn returns the new role's ARN
+func (c Creds) NextRoleArn(role, accountID string) (string, error) {
+	identity, err := c.identity()
+	if err != nil {
+		return "", err
+	}
+	partition, err := c.partition()
+	if err != nil {
+		return "", err
+	}
+	if accountID == "" {
+		accountID = *identity.Account
+	}
+	arn := fmt.Sprintf("arn:%s:iam::%s:role/%s", partition, accountID, role)
+	return arn, nil
 }
