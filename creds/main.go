@@ -240,7 +240,7 @@ func (c Creds) MfaArn() (string, error) {
 		return "", err
 	}
 	if strings.Index(*identity.Arn, ":user/") == -1 {
-		return "", fmt.Errorf("Failed to parse MFA ARN for non-user: %s", identity.Arn)
+		return "", fmt.Errorf("Failed to parse MFA ARN for non-user: %s", *identity.Arn)
 	}
 	mfaArn := strings.Replace(*identity.Arn, ":user/", ":mfa/", 1)
 	return mfaArn, nil
