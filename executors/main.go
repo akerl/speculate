@@ -91,10 +91,8 @@ func (m *Mfa) GetMfa() (bool, error) {
 // GetMfaSerial returns the ARN of the MFA device
 func (m *Mfa) GetMfaSerial() (string, error) {
 	if m.mfaSerial == "" {
-		c, err := creds.Creds{}
-		if err != nil {
-			return "", err
-		}
+		c := creds.Creds{}
+		var err error
 		m.mfaSerial, err = c.MfaArn()
 		if err != nil {
 			return "", err
