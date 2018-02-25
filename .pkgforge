@@ -7,7 +7,7 @@ source(
 )
 
 build do
-  make
+  run 'make local'
   cp 'bin'
 end
 
