@@ -1,0 +1,2 @@
+PACKAGE = speculate
+NAMESPACE = github.com/akerl
