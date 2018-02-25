@@ -5,6 +5,7 @@ machine:
     PKGFORGE_STATEFILE: '/tmp/pkgforge'
 dependencies:
   override:
+  - '(rm -fr .git/modules && git submodule deinit -f . && git submodule update --init --recursive)'
   - git submodule update --init --recursive
   - git fetch --tags origin
 test:
