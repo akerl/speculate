@@ -1,7 +1,36 @@
 Prospectus.extra_dep('file', 'prospectus_circleci')
+require 'json'
 
 item do
   noop
+
+  deps do
+    raw = `STATUS_FLAGS=-json make -s status`
+    res = JSON.parse(raw)
+    res.map do |x|
+      item do
+        name x['ProjectRoot']
+
+        good = x['Latest']
+        if x['Version'] =~ /^branch /
+          now = x['Revision'][0..8]
+          good = good[0..8]
+        else
+          now = x['Version']
+        end
+
+        actual do
+          static
+          set now
+        end
+
+        expected do
+          static
+          set good
+        end
+      end
+    end
+  end
 
   extend ProspectusCircleci::Build.new('akerl/speculate')
 end
