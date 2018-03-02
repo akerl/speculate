@@ -50,7 +50,6 @@ func NewFromStsSdk(stsCreds *sts.Credentials) (Creds, error) {
 
 // NewFromEnv initializes credentials from the environment variables
 func NewFromEnv() (Creds, error) {
-	// TODO: Handle region env vars here
 	envCreds := make(map[string]string)
 	for k, v := range Translations["envvar"] {
 		if envCreds[v] == "" {
@@ -67,6 +66,7 @@ var Translations = map[string]map[string]string{
 		"AWS_SECRET_ACCESS_KEY": "SecretKey",
 		"AWS_SESSION_TOKEN":     "SessionToken",
 		"AWS_SECURITY_TOKEN":    "SessionToken",
+		"AWS_DEFAULT_REGION":    "Region",
 	},
 	"console": {
 		"sessionId":    "AccessKey",
@@ -231,6 +231,15 @@ func (c Creds) namespace() (string, error) {
 var namespaces = map[string]string{
 	"aws":        "aws.amazon",
 	"aws-us-gov": "amazonaws-us-gov",
+}
+
+// AccountID returns the user's account ID
+func (c Creds) AccountID() (string, error) {
+	identity, err := c.identity()
+	if err != nil {
+		return "", err
+	}
+	return *identity.Account, nil
 }
 
 // MfaArn returns the user's virtual MFA token ARN

@@ -1,11 +1,15 @@
 package executors
 
 import (
+	"fmt"
+
 	"github.com/akerl/speculate/creds"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sts"
 )
+
+const ()
 
 // Assumption describes the parameters that result in a Role
 type Assumption struct {
@@ -55,23 +59,9 @@ func (a *Assumption) ExecuteWithCreds(c creds.Creds) (creds.Creds, error) {
 		DurationSeconds: aws.Int64(lifetime),
 	}
 
-	// TODO: Remove duplication of MFA code
-	useMfa, err := a.GetMfa()
+	err = a.configureMfa(params)
 	if err != nil {
 		return newCreds, err
-	}
-	if useMfa {
-		mfaCode, err := a.GetMfaCode()
-		if err != nil {
-			return newCreds, err
-		}
-		mfaSerial, err := a.GetMfaSerial()
-		if err != nil {
-			return newCreds, err
-		}
-
-		params.TokenCode = aws.String(mfaCode)
-		params.SerialNumber = aws.String(mfaSerial)
 	}
 
 	policy, err := a.GetPolicy()
@@ -94,35 +84,47 @@ func (a *Assumption) ExecuteWithCreds(c creds.Creds) (creds.Creds, error) {
 
 // SetAccountID sets the target account ID
 func (a *Assumption) SetAccountID(val string) error {
-	// TODO: check if valid account ID
-	a.accountID = val
-	return nil
+	if accountIDRegex.MatchString(val) {
+		a.accountID = val
+		return nil
+	}
+	return fmt.Errorf("Account ID is malformed: %s", val)
 }
 
 // SetRoleName sets the target role name
 func (a *Assumption) SetRoleName(val string) error {
-	// TODO: check if valid role name
-	a.roleName = val
-	return nil
+	if iamEntityRegex.MatchString(val) {
+		a.roleName = val
+		return nil
+	}
+	return fmt.Errorf("Role name is malformed: %s", val)
 }
 
 // SetSessionName sets the target session name
 func (a *Assumption) SetSessionName(val string) error {
-	// TODO: check if valid session name
-	a.sessionName = val
-	return nil
+	if iamEntityRegex.MatchString(val) {
+		a.sessionName = val
+		return nil
+	}
+	return fmt.Errorf("Session name is malformed: %s", val)
 }
 
 // SetPolicy sets the new IAM policy
 func (a *Assumption) SetPolicy(val string) error {
-	// TODO: check if valid policy
 	a.policy = val
 	return nil
 }
 
 // GetAccountID gets the target account ID
 func (a *Assumption) GetAccountID() (string, error) {
-	// TODO: pull real account ID from creds
+	if a.accountID == "" {
+		c := creds.Creds{}
+		var err error
+		a.accountID, err = c.AccountID()
+		if err != nil {
+			return "", err
+		}
+	}
 	return a.accountID, nil
 }
 

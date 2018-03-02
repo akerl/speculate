@@ -4,10 +4,25 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/akerl/speculate/creds"
+
+	"github.com/aws/aws-sdk-go/service/sts"
 )
+
+const (
+	mfaCodeRegexString   = `^\d{6}$`
+	mfaArnRegexString    = `^arn:aws(?:-gov)?:iam::\d+:mfa/[\w+=,.@-]+$`
+	iamEntityRegexString = `^[\w+=,.@-]+$`
+	accountIDRegexString = `^\d{12}$`
+)
+
+var mfaCodeRegex = regexp.MustCompile(mfaCodeRegexString)
+var mfaArnRegex = regexp.MustCompile(mfaArnRegexString)
+var iamEntityRegex = regexp.MustCompile(iamEntityRegexString)
+var accountIDRegex = regexp.MustCompile(accountIDRegexString)
 
 // Executor defines the interface for requesting a new set of AWS creds
 type Executor interface {
@@ -68,16 +83,20 @@ func (m *Mfa) SetMfa(val bool) error {
 
 // SetMfaSerial sets the ARN of the MFA device
 func (m *Mfa) SetMfaSerial(val string) error {
-	// TODO: Check if valid ARN
-	m.mfaSerial = val
-	return nil
+	if mfaArnRegex.MatchString(val) {
+		m.mfaSerial = val
+		return nil
+	}
+	return fmt.Errorf("MFA Serial is malformed: %s", val)
 }
 
 // SetMfaCode sets the OTP for MFA
 func (m *Mfa) SetMfaCode(val string) error {
-	// TODO: Check if valid code
-	m.mfaCode = val
-	return nil
+	if mfaCodeRegex.MatchString(val) {
+		m.mfaCode = val
+		return nil
+	}
+	return fmt.Errorf("MFA Code is malformed: %s", val)
 }
 
 // GetMfa returns if MFA will be used
@@ -113,4 +132,35 @@ func (m *Mfa) GetMfaCode() (string, error) {
 		m.mfaCode = strings.TrimRight(mfa, "\n")
 	}
 	return m.mfaCode, nil
+}
+
+func (m *Mfa) configureMfa(paramsIface interface{}) error {
+	useMfa, err := m.GetMfa()
+	if err != nil {
+		return err
+	}
+	if !useMfa {
+		return nil
+	}
+
+	mfaCode, err := m.GetMfaCode()
+	if err != nil {
+		return err
+	}
+	mfaSerial, err := m.GetMfaSerial()
+	if err != nil {
+		return err
+	}
+
+	switch params := paramsIface.(type) {
+	case *sts.AssumeRoleInput:
+		params.TokenCode = &mfaCode
+		params.SerialNumber = &mfaSerial
+	case *sts.GetSessionTokenInput:
+		params.TokenCode = &mfaCode
+		params.SerialNumber = &mfaSerial
+	default:
+		return fmt.Errorf("Expected AssumeRoleInput or GetSessionTokenInput, received %T", params)
+	}
+	return nil
 }

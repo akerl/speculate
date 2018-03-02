@@ -33,22 +33,9 @@ func (s *Signin) ExecuteWithCreds(c creds.Creds) (creds.Creds, error) {
 		DurationSeconds: aws.Int64(lifetime),
 	}
 
-	useMfa, err := s.GetMfa()
+	err = s.configureMfa(params)
 	if err != nil {
 		return newCreds, err
-	}
-	if useMfa {
-		mfaCode, err := s.GetMfaCode()
-		if err != nil {
-			return newCreds, err
-		}
-		mfaSerial, err := s.GetMfaSerial()
-		if err != nil {
-			return newCreds, err
-		}
-
-		params.TokenCode = aws.String(mfaCode)
-		params.SerialNumber = aws.String(mfaSerial)
 	}
 
 	client := newCreds.Client()
