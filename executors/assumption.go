@@ -102,7 +102,7 @@ func (a *Assumption) SetRoleName(val string) error {
 
 // SetSessionName sets the target session name
 func (a *Assumption) SetSessionName(val string) error {
-	if iamEntityRegex.MatchString(val) {
+	if len(val) == 0 || iamEntityRegex.MatchString(val) {
 		a.sessionName = val
 		return nil
 	}
