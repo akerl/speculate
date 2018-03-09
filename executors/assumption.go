@@ -84,7 +84,7 @@ func (a *Assumption) ExecuteWithCreds(c creds.Creds) (creds.Creds, error) {
 
 // SetAccountID sets the target account ID
 func (a *Assumption) SetAccountID(val string) error {
-	if accountIDRegex.MatchString(val) {
+	if val == "" || accountIDRegex.MatchString(val) {
 		a.accountID = val
 		return nil
 	}
@@ -93,7 +93,7 @@ func (a *Assumption) SetAccountID(val string) error {
 
 // SetRoleName sets the target role name
 func (a *Assumption) SetRoleName(val string) error {
-	if iamEntityRegex.MatchString(val) {
+	if val == "" || iamEntityRegex.MatchString(val) {
 		a.roleName = val
 		return nil
 	}
@@ -102,7 +102,7 @@ func (a *Assumption) SetRoleName(val string) error {
 
 // SetSessionName sets the target session name
 func (a *Assumption) SetSessionName(val string) error {
-	if len(val) == 0 || iamEntityRegex.MatchString(val) {
+	if val == "" || iamEntityRegex.MatchString(val) {
 		a.sessionName = val
 		return nil
 	}

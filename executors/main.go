@@ -53,7 +53,7 @@ type Lifetime struct {
 
 // SetLifetime allows setting the credential lifespan
 func (l *Lifetime) SetLifetime(val int64) error {
-	if val < 900 || val > 3600 {
+	if val != 0 && (val < 900 || val > 3600) {
 		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", val)
 	}
 	l.lifetimeInt = val
@@ -83,7 +83,7 @@ func (m *Mfa) SetMfa(val bool) error {
 
 // SetMfaSerial sets the ARN of the MFA device
 func (m *Mfa) SetMfaSerial(val string) error {
-	if mfaArnRegex.MatchString(val) {
+	if val == "" || mfaArnRegex.MatchString(val) {
 		m.mfaSerial = val
 		return nil
 	}
@@ -92,7 +92,7 @@ func (m *Mfa) SetMfaSerial(val string) error {
 
 // SetMfaCode sets the OTP for MFA
 func (m *Mfa) SetMfaCode(val string) error {
-	if mfaCodeRegex.MatchString(val) {
+	if val == "" || mfaCodeRegex.MatchString(val) {
 		m.mfaCode = val
 		return nil
 	}
