@@ -103,7 +103,9 @@ func (c Creds) ToEnvVars() []string {
 	envCreds := c.Translate(Translations["envvar"])
 	var res []string
 	for k, v := range envCreds {
-		res = append(res, fmt.Sprintf("export %s=%s", k, v))
+		if v != "" {
+			res = append(res, fmt.Sprintf("export %s=%s", k, v))
+		}
 	}
 	sort.Strings(res)
 	return res
