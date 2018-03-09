@@ -80,6 +80,7 @@ func (c Creds) toMap() map[string]string {
 		"AccessKey":    c.AccessKey,
 		"SecretKey":    c.SecretKey,
 		"SessionToken": c.SessionToken,
+		"Region":       c.Region,
 	}
 }
 
