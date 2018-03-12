@@ -129,7 +129,7 @@ func (m *Mfa) GetMfaCode() (string, error) {
 		if err != nil {
 			return "", err
 		}
-		m.mfaCode = strings.TrimRight(mfa, "\n")
+		m.mfaCode = strings.TrimSpace(mfa)
 	}
 	return m.mfaCode, nil
 }
