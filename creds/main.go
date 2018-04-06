@@ -165,7 +165,12 @@ func (c Creds) ToConsoleURL() (string, error) {
 		return "", err
 	}
 	baseURL := fmt.Sprintf(consoleTokenURL, namespace)
-	targetURL := fmt.Sprintf("https://console.%s.com/", namespace)
+	var targetURL string
+	if c.Region != "" {
+		targetURL = fmt.Sprintf("https://%s.console.%s.com/", c.Region, namespace)
+	} else {
+		targetURL = fmt.Sprintf("https://console.%s.com/", namespace)
+	}
 	urlParts := []string{
 		baseURL,
 		"/federation",
