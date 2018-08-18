@@ -9,8 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 )
 
-const ()
-
 // Assumption describes the parameters that result in a Role
 type Assumption struct {
 	roleName    string

@@ -112,7 +112,7 @@ func (c Creds) ToEnvVars() []string {
 	return res
 }
 
-var consoleTokenURL = "https://signin.%s.com"
+var consoleTokenURL = "https://signin.%s.com" // #nosec
 
 type consoleTokenResponse struct {
 	SigninToken string
@@ -145,6 +145,9 @@ func (c Creds) toConsoleToken() (string, error) {
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
 
 	tokenObj := consoleTokenResponse{}
 	if err := json.Unmarshal(body, &tokenObj); err != nil {
@@ -256,7 +259,7 @@ func (c Creds) MfaArn() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if strings.Index(*identity.Arn, ":user/") == -1 {
+	if !strings.Contains(*identity.Arn, ":user/") {
 		return "", fmt.Errorf("Failed to parse MFA ARN for non-user: %s", *identity.Arn)
 	}
 	mfaArn := strings.Replace(*identity.Arn, ":user/", ":mfa/", 1)
