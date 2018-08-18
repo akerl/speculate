@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Version is overriden by link flags during build
+// Version is overridden by link flags during build
 var Version = "unset"
 
 var versionCmd = &cobra.Command{
