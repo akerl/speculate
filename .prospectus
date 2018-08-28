@@ -1,4 +1,4 @@
-Prospectus.extra_dep('file', 'prospectus_circleci')
+Prospectus.extra_dep('file', 'prospectus_travis')
 require 'json'
 
 item do
@@ -32,5 +32,5 @@ item do
     end
   end
 
-  extend ProspectusCircleci::Build.new('akerl/speculate')
+  extend ProspectusTravis::Build.new('akerl/speculate')
 end
