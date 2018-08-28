@@ -1,7 +1,7 @@
 speculate
 =========
 
-[![Build Status](https://img.shields.io/circleci/project/akerl/speculate/master.svg)](https://circleci.com/gh/akerl/speculate)
+[![Build Status](https://img.shields.io/travis/com/akerl/speculate.svg)](https://travis-ci.com/akerl/speculate)
 [![GitHub release](https://img.shields.io/github/release/akerl/speculate.svg)](https://github.com/akerl/speculate/releases)
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-green.svg)](https://tldrlegal.com/license/mit-license)
 
