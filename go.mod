@@ -7,4 +7,6 @@ require (
 	github.com/mitchellh/iochan v1.0.0 // indirect
 	github.com/spf13/cobra v0.0.2
 	github.com/spf13/pflag v1.0.1
+	github.com/stretchr/testify v1.3.0 // indirect
+	golang.org/x/net v0.0.0-20190110200230-915654e7eabc // indirect
 )
