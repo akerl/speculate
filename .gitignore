@@ -3,3 +3,5 @@
 /vendor/
 /pkg/
 /.github
+/payload.zip
+/.tools/
