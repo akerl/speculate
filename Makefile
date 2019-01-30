@@ -1,1 +1,1 @@
-meta/Makefile
+include meta/Makefile
