@@ -36,6 +36,7 @@ type Executor interface {
 	SetMfa(bool) error
 	SetMfaSerial(string) error
 	SetMfaCode(string) error
+	SetMfaPrompt(mfaPromptFunc) error
 	GetAccountID() (string, error)
 	GetRoleName() (string, error)
 	GetSessionName() (string, error)
@@ -44,6 +45,7 @@ type Executor interface {
 	GetMfa() (bool, error)
 	GetMfaSerial() (string, error)
 	GetMfaCode() (string, error)
+	GetMfaPrompt() (mfaPromptFunc, error)
 }
 
 // Lifetime object encapsulates the setup of session duration
@@ -73,7 +75,10 @@ type Mfa struct {
 	useMfa    bool
 	mfaSerial string
 	mfaCode   string
+	mfaPrompt mfaPromptFunc
 }
+
+type mfaPromptFunc func() (string, error)
 
 // SetMfa sets whether MFA is used
 func (m *Mfa) SetMfa(val bool) error {
@@ -97,6 +102,12 @@ func (m *Mfa) SetMfaCode(val string) error {
 		return nil
 	}
 	return fmt.Errorf("MFA Code is malformed: %s", val)
+}
+
+// SetMfaPrompt provides a custom method for loading the MFA code
+func (m *Mfa) SetMfaPrompt(val mfaPromptFunc) error {
+	m.mfaPrompt = val
+	return nil
 }
 
 // GetMfa returns if MFA will be used
@@ -123,15 +134,35 @@ func (m *Mfa) GetMfaSerial() (string, error) {
 // GetMfaCode returns the OTP to use
 func (m *Mfa) GetMfaCode() (string, error) {
 	if m.mfaCode == "" {
-		mfaReader := bufio.NewReader(os.Stdin)
-		fmt.Fprint(os.Stderr, "MFA Code: ")
-		mfa, err := mfaReader.ReadString('\n')
+		mfaPrompt, err := m.GetMfaPrompt()
 		if err != nil {
 			return "", err
 		}
-		m.mfaCode = strings.TrimSpace(mfa)
+		mfa, err := mfaPrompt()
+		if err != nil {
+			return "", err
+		}
+		m.mfaCode = mfa
 	}
 	return m.mfaCode, nil
+}
+
+// GetMfaPrompt returns the function to use for asking the user for an MFA code
+func (m *Mfa) GetMfaPrompt() (mfaPromptFunc, error) {
+	if m.mfaPrompt == nil {
+		m.mfaPrompt = defaultMfaPrompt
+	}
+	return m.mfaPrompt, nil
+}
+
+func defaultMfaPrompt() (string, error) {
+	mfaReader := bufio.NewReader(os.Stdin)
+	fmt.Fprint(os.Stderr, "MFA Code: ")
+	mfa, err := mfaReader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(mfa), nil
 }
 
 func (m *Mfa) configureMfa(paramsIface interface{}) error {
