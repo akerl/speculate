@@ -96,8 +96,10 @@ func parseFlags(exec executors.Executor, flags *pflag.FlagSet) error {
 
 	if val, err := flags.GetBool("mfa"); err != nil {
 		return err
-	} else if err := exec.SetMfa(val); err != nil {
-		return err
+	} else if val {
+		if err := exec.SetMfa(val); err != nil {
+			return err
+		}
 	}
 
 	if val, err := flags.GetString("mfacode"); err != nil {

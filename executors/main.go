@@ -9,8 +9,11 @@ import (
 
 	"github.com/akerl/speculate/creds"
 
+	"github.com/akerl/timber/log"
 	"github.com/aws/aws-sdk-go/service/sts"
 )
+
+var logger = log.NewLogger("mypackage")
 
 const (
 	mfaCodeRegexString   = `^\d{6}$`
@@ -58,6 +61,7 @@ func (l *Lifetime) SetLifetime(val int64) error {
 	if val != 0 && (val < 900 || val > 3600) {
 		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", val)
 	}
+	logger.InfoMsg(fmt.Sprintf("Setting lifetime to %d", val))
 	l.lifetimeInt = val
 	return nil
 }
@@ -85,6 +89,7 @@ type MfaPrompt interface {
 
 // SetMfa sets whether MFA is used
 func (m *Mfa) SetMfa(val bool) error {
+	logger.InfoMsg(fmt.Sprintf("Setting MFA: %t", val))
 	m.useMfa = val
 	return nil
 }
@@ -92,6 +97,7 @@ func (m *Mfa) SetMfa(val bool) error {
 // SetMfaSerial sets the ARN of the MFA device
 func (m *Mfa) SetMfaSerial(val string) error {
 	if val == "" || mfaArnRegex.MatchString(val) {
+		logger.InfoMsg(fmt.Sprintf("Setting MFA serial: %s", val))
 		m.mfaSerial = val
 		return nil
 	}
@@ -101,6 +107,7 @@ func (m *Mfa) SetMfaSerial(val string) error {
 // SetMfaCode sets the OTP for MFA
 func (m *Mfa) SetMfaCode(val string) error {
 	if val == "" || mfaCodeRegex.MatchString(val) {
+		logger.InfoMsg(fmt.Sprintf("Setting MFA code: %s", val))
 		m.mfaCode = val
 		return nil
 	}
@@ -109,6 +116,7 @@ func (m *Mfa) SetMfaCode(val string) error {
 
 // SetMfaPrompt provides a custom method for loading the MFA code
 func (m *Mfa) SetMfaPrompt(val MfaPrompt) error {
+	logger.InfoMsg("Setting MFA prompt function")
 	m.mfaPrompt = val
 	return nil
 }
@@ -130,6 +138,7 @@ func (m *Mfa) GetMfaSerial() (string, error) {
 		if err != nil {
 			return "", err
 		}
+		logger.InfoMsg(fmt.Sprintf("Using default value for MFA serial: %s", m.mfaSerial))
 	}
 	return m.mfaSerial, nil
 }
@@ -141,6 +150,7 @@ func (m *Mfa) GetMfaCode() (string, error) {
 		if err != nil {
 			return "", err
 		}
+		logger.InfoMsg("Calling MFA Prompt function")
 		mfa, err := mfaPrompt.Prompt()
 		if err != nil {
 			return "", err
@@ -153,6 +163,7 @@ func (m *Mfa) GetMfaCode() (string, error) {
 // GetMfaPrompt returns the function to use for asking the user for an MFA code
 func (m *Mfa) GetMfaPrompt() (MfaPrompt, error) {
 	if m.mfaPrompt == nil {
+		logger.InfoMsg("Using default value for MFA prompt function")
 		m.mfaPrompt = &DefaultMfaPrompt{}
 	}
 	return m.mfaPrompt, nil

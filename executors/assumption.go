@@ -83,6 +83,7 @@ func (a *Assumption) ExecuteWithCreds(c creds.Creds) (creds.Creds, error) {
 // SetAccountID sets the target account ID
 func (a *Assumption) SetAccountID(val string) error {
 	if val == "" || accountIDRegex.MatchString(val) {
+		logger.InfoMsg(fmt.Sprintf("Setting account ID to %s", val))
 		a.accountID = val
 		return nil
 	}
@@ -92,6 +93,7 @@ func (a *Assumption) SetAccountID(val string) error {
 // SetRoleName sets the target role name
 func (a *Assumption) SetRoleName(val string) error {
 	if val == "" || iamEntityRegex.MatchString(val) {
+		logger.InfoMsg(fmt.Sprintf("Setting role name to %s", val))
 		a.roleName = val
 		return nil
 	}
@@ -101,6 +103,7 @@ func (a *Assumption) SetRoleName(val string) error {
 // SetSessionName sets the target session name
 func (a *Assumption) SetSessionName(val string) error {
 	if val == "" || iamEntityRegex.MatchString(val) {
+		logger.InfoMsg(fmt.Sprintf("Setting session name to %s", val))
 		a.sessionName = val
 		return nil
 	}
@@ -122,6 +125,7 @@ func (a *Assumption) GetAccountID() (string, error) {
 		if err != nil {
 			return "", err
 		}
+		logger.InfoMsg(fmt.Sprintf("Using default value for account ID: %s", a.accountID))
 	}
 	return a.accountID, nil
 }
@@ -140,6 +144,7 @@ func (a *Assumption) GetSessionName() (string, error) {
 		if err != nil {
 			return "", err
 		}
+		logger.InfoMsg(fmt.Sprintf("Using default value for session name: %s", a.sessionName))
 	}
 	return a.sessionName, nil
 }

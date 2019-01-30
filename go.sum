@@ -1,3 +1,5 @@
+github.com/akerl/timber v0.0.1 h1:p6thUlhnOZEvVeAcK3OoIiRdj5QzOKHnFQyQLVDAhfc=
+github.com/akerl/timber v0.0.1/go.mod h1:LFiUpCR4BAfk6HMg6t45XIfmXcNJubA+wnw4uq2MHJg=
 github.com/aws/aws-sdk-go v1.16.22 h1:9wop6aMrfW/bLaW+p/tNMfmeDmvErKXHqakSPqyYrHA=
 github.com/aws/aws-sdk-go v1.16.22/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.16.26 h1:GWkl3rkRO/JGRTWoLLIqwf7AWC4/W/1hMOUZqmX0js4=
