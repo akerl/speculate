@@ -36,7 +36,7 @@ type Executor interface {
 	SetMfa(bool) error
 	SetMfaSerial(string) error
 	SetMfaCode(string) error
-	SetMfaPrompt(mfaPromptFunc) error
+	SetMfaPrompt(MfaPrompt) error
 	GetAccountID() (string, error)
 	GetRoleName() (string, error)
 	GetSessionName() (string, error)
@@ -45,7 +45,7 @@ type Executor interface {
 	GetMfa() (bool, error)
 	GetMfaSerial() (string, error)
 	GetMfaCode() (string, error)
-	GetMfaPrompt() (mfaPromptFunc, error)
+	GetMfaPrompt() (MfaPrompt, error)
 }
 
 // Lifetime object encapsulates the setup of session duration
@@ -75,10 +75,13 @@ type Mfa struct {
 	useMfa    bool
 	mfaSerial string
 	mfaCode   string
-	mfaPrompt mfaPromptFunc
+	mfaPrompt MfaPrompt
 }
 
-type mfaPromptFunc func() (string, error)
+// MfaPrompt interface describes an object which can prompt the user for their MFA
+type MfaPrompt interface {
+	Prompt() (string, error)
+}
 
 // SetMfa sets whether MFA is used
 func (m *Mfa) SetMfa(val bool) error {
@@ -105,7 +108,7 @@ func (m *Mfa) SetMfaCode(val string) error {
 }
 
 // SetMfaPrompt provides a custom method for loading the MFA code
-func (m *Mfa) SetMfaPrompt(val mfaPromptFunc) error {
+func (m *Mfa) SetMfaPrompt(val MfaPrompt) error {
 	m.mfaPrompt = val
 	return nil
 }
@@ -138,7 +141,7 @@ func (m *Mfa) GetMfaCode() (string, error) {
 		if err != nil {
 			return "", err
 		}
-		mfa, err := mfaPrompt()
+		mfa, err := mfaPrompt.Prompt()
 		if err != nil {
 			return "", err
 		}
@@ -148,14 +151,18 @@ func (m *Mfa) GetMfaCode() (string, error) {
 }
 
 // GetMfaPrompt returns the function to use for asking the user for an MFA code
-func (m *Mfa) GetMfaPrompt() (mfaPromptFunc, error) {
+func (m *Mfa) GetMfaPrompt() (MfaPrompt, error) {
 	if m.mfaPrompt == nil {
-		m.mfaPrompt = defaultMfaPrompt
+		m.mfaPrompt = &DefaultMfaPrompt{}
 	}
 	return m.mfaPrompt, nil
 }
 
-func defaultMfaPrompt() (string, error) {
+// DefaultMfaPrompt defines the standard CLI-based MFA prompt
+type DefaultMfaPrompt struct{}
+
+// Prompt asks the user for their MFA token
+func (p *DefaultMfaPrompt) Prompt() (string, error) {
 	mfaReader := bufio.NewReader(os.Stdin)
 	fmt.Fprint(os.Stderr, "MFA Code: ")
 	mfa, err := mfaReader.ReadString('\n')
