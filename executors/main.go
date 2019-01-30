@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 )
 
-var logger = log.NewLogger("mypackage")
+var logger = log.NewLogger("speculate")
 
 const (
 	mfaCodeRegexString   = `^\d{6}$`
