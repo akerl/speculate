@@ -59,7 +59,7 @@ type Lifetime struct {
 // SetLifetime allows setting the credential lifespan
 func (l *Lifetime) SetLifetime(val int64) error {
 	if val != 0 && (val < 900 || val > 3600) {
-		return fmt.Errorf("Lifetime must be between 900 and 3600: %d", val)
+		return fmt.Errorf("lifetime must be between 900 and 3600: %d", val)
 	}
 	logger.InfoMsg(fmt.Sprintf("Setting lifetime to %d", val))
 	l.lifetimeInt = val
@@ -209,7 +209,7 @@ func (m *Mfa) configureMfa(paramsIface interface{}) error {
 		params.TokenCode = &mfaCode
 		params.SerialNumber = &mfaSerial
 	default:
-		return fmt.Errorf("Expected AssumeRoleInput or GetSessionTokenInput, received %T", params)
+		return fmt.Errorf("expected AssumeRoleInput or GetSessionTokenInput, received %T", params)
 	}
 	return nil
 }

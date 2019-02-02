@@ -27,7 +27,7 @@ func New(argCreds map[string]string) (Creds, error) {
 	for _, key := range required {
 		elem, ok := argCreds[key]
 		if !ok || elem == "" {
-			return Creds{}, fmt.Errorf("Missing required key for Creds: %s", key)
+			return Creds{}, fmt.Errorf("missing required key for Creds: %s", key)
 		}
 	}
 	c := Creds{
@@ -240,7 +240,7 @@ func (c Creds) namespace() (string, error) {
 	if ok {
 		return result, nil
 	}
-	return "", fmt.Errorf("Unknown partition: %s", partition)
+	return "", fmt.Errorf("unknown partition: %s", partition)
 }
 
 var namespaces = map[string]string{
@@ -264,7 +264,7 @@ func (c Creds) MfaArn() (string, error) {
 		return "", err
 	}
 	if !strings.Contains(*identity.Arn, ":user/") {
-		return "", fmt.Errorf("Failed to parse MFA ARN for non-user: %s", *identity.Arn)
+		return "", fmt.Errorf("failed to parse MFA ARN for non-user: %s", *identity.Arn)
 	}
 	mfaArn := strings.Replace(*identity.Arn, ":user/", ":mfa/", 1)
 	return mfaArn, nil
@@ -282,9 +282,9 @@ func (c Creds) SessionName() (string, error) {
 }
 
 // NextRoleArn returns the new role's ARN
-func (c Creds) NextRoleArn(role, accountID string) (string, error) {
+func (c Creds) NextRoleArn(role, inputAccountID string) (string, error) {
 	if role == "" {
-		return "", fmt.Errorf("Role name cannot be empty")
+		return "", fmt.Errorf("role name cannot be empty")
 	}
 	identity, err := c.identity()
 	if err != nil {
@@ -294,6 +294,7 @@ func (c Creds) NextRoleArn(role, accountID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	accountID := inputAccountID
 	if accountID == "" {
 		accountID = *identity.Account
 	}

@@ -38,7 +38,7 @@ func (s *Signin) ExecuteWithCreds(c creds.Creds) (creds.Creds, error) {
 		return newCreds, err
 	}
 
-	client := newCreds.Client()
+	client := c.Client()
 	resp, err := client.GetSessionToken(params)
 	if err != nil {
 		return newCreds, err
@@ -49,41 +49,41 @@ func (s *Signin) ExecuteWithCreds(c creds.Creds) (creds.Creds, error) {
 }
 
 // SetAccountID sets the target account ID
-func (s *Signin) SetAccountID(val string) error {
-	return fmt.Errorf("AccountID is invalid for GetSessionToken")
+func (s *Signin) SetAccountID(_ string) error {
+	return fmt.Errorf("accountID is invalid for GetSessionToken")
 }
 
 // SetRoleName sets the target role name
-func (s *Signin) SetRoleName(val string) error {
-	return fmt.Errorf("RoleName is invalid for GetSessionToken")
+func (s *Signin) SetRoleName(_ string) error {
+	return fmt.Errorf("roleName is invalid for GetSessionToken")
 }
 
 // SetSessionName sets the target session name
-func (s *Signin) SetSessionName(val string) error {
-	return fmt.Errorf("SessionName is invalid for GetSessionToken")
+func (s *Signin) SetSessionName(_ string) error {
+	return fmt.Errorf("sessionName is invalid for GetSessionToken")
 }
 
 // SetPolicy sets the new IAM policy
-func (s *Signin) SetPolicy(val string) error {
-	return fmt.Errorf("Policy is invalid for GetSessionToken")
+func (s *Signin) SetPolicy(_ string) error {
+	return fmt.Errorf("policy is invalid for GetSessionToken")
 }
 
 // GetAccountID gets the target account ID
 func (s *Signin) GetAccountID() (string, error) {
-	return "", fmt.Errorf("AccountID is invalid for GetSessionToken")
+	return "", fmt.Errorf("accountID is invalid for GetSessionToken")
 }
 
 // GetRoleName gets the target role name
 func (s *Signin) GetRoleName() (string, error) {
-	return "", fmt.Errorf("RoleName is invalid for GetSessionToken")
+	return "", fmt.Errorf("roleName is invalid for GetSessionToken")
 }
 
 // GetSessionName gets the target session name
 func (s *Signin) GetSessionName() (string, error) {
-	return "", fmt.Errorf("SessionName is invalid for GetSessionToken")
+	return "", fmt.Errorf("sessionName is invalid for GetSessionToken")
 }
 
 // GetPolicy gets the new IAM policy
 func (s *Signin) GetPolicy() (string, error) {
-	return "", fmt.Errorf("Policy is invalid for GetSessionToken")
+	return "", fmt.Errorf("policy is invalid for GetSessionToken")
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func consoleRunner(cmd *cobra.Command, args []string) error {
+func consoleRunner(_ *cobra.Command, _ []string) error {
 	c, err := creds.NewFromEnv()
 	if err != nil {
 		return err

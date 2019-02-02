@@ -87,7 +87,7 @@ func (a *Assumption) SetAccountID(val string) error {
 		a.accountID = val
 		return nil
 	}
-	return fmt.Errorf("Account ID is malformed: %s", val)
+	return fmt.Errorf("account ID is malformed: %s", val)
 }
 
 // SetRoleName sets the target role name
@@ -97,7 +97,7 @@ func (a *Assumption) SetRoleName(val string) error {
 		a.roleName = val
 		return nil
 	}
-	return fmt.Errorf("Role name is malformed: %s", val)
+	return fmt.Errorf("role name is malformed: %s", val)
 }
 
 // SetSessionName sets the target session name
@@ -107,7 +107,7 @@ func (a *Assumption) SetSessionName(val string) error {
 		a.sessionName = val
 		return nil
 	}
-	return fmt.Errorf("Session name is malformed: %s", val)
+	return fmt.Errorf("session name is malformed: %s", val)
 }
 
 // SetPolicy sets the new IAM policy
