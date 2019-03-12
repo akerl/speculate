@@ -2,7 +2,7 @@ module github.com/akerl/speculate
 
 require (
 	github.com/akerl/timber v0.0.3
-	github.com/aws/aws-sdk-go v1.17.13
+	github.com/aws/aws-sdk-go v1.18.0
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3
 )
