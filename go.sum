@@ -1,7 +1,7 @@
 github.com/akerl/timber v0.0.3 h1:xTqH54vCSLjDlAsHkDL5+sZuO8xPdqsamTUk9ense/w=
 github.com/akerl/timber v0.0.3/go.mod h1:LFiUpCR4BAfk6HMg6t45XIfmXcNJubA+wnw4uq2MHJg=
-github.com/aws/aws-sdk-go v1.18.2 h1:GcmH9zTLXpWLyijotBQ1i83sslnkuORZVot+yAsj/LQ=
-github.com/aws/aws-sdk-go v1.18.2/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
+github.com/aws/aws-sdk-go v1.18.3 h1:6BkQIKBFCXw0zVQl5KC7o+J/zYTyz+DKWxL3Uy0XUjg=
+github.com/aws/aws-sdk-go v1.18.3/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af h1:pmfjZENx5imkbgOkpRUYLnmbU7UEFbjtDA2hxJ1ichM=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/spf13/cobra v0.0.3 h1:ZlrZ4XsMRm04Fr5pSFxBgfND2EBVa1nLpiy1stUsX/8=
