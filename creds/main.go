@@ -163,6 +163,11 @@ func (c Creds) toConsoleToken() (string, error) {
 
 // ToConsoleURL returns a console URL for the role
 func (c Creds) ToConsoleURL() (string, error) {
+	return c.ToCustomConsoleURL("")
+}
+
+// ToCustomConsoleURL returns a console URL with a custom path
+func (c Creds) ToCustomConsoleURL(dest string) (string, error) {
 	consoleToken, err := c.toConsoleToken()
 	if err != nil {
 		return "", err
@@ -174,9 +179,9 @@ func (c Creds) ToConsoleURL() (string, error) {
 	baseURL := fmt.Sprintf(consoleTokenURL, namespace)
 	var targetURL string
 	if c.Region != "" {
-		targetURL = fmt.Sprintf("https://%s.console.%s.com/", c.Region, namespace)
+		targetURL = fmt.Sprintf("https://%s.console.%s.com/%s", c.Region, namespace, dest)
 	} else {
-		targetURL = fmt.Sprintf("https://console.%s.com/", namespace)
+		targetURL = fmt.Sprintf("https://console.%s.com/%s", namespace, dest)
 	}
 	urlParts := []string{
 		baseURL,
