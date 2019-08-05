@@ -8,12 +8,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func consoleRunner(_ *cobra.Command, _ []string) error {
+func consoleRunner(cmd *cobra.Command, _ []string) error {
+	flags := cmd.Flags()
+
+	flagService, err := flags.GetString("service")
+	if err != nil {
+		return err
+	}
+
 	c, err := creds.NewFromEnv()
 	if err != nil {
 		return err
 	}
-	url, err := c.ToConsoleURL()
+
+	url, err := c.ToCustomConsoleURL(flagService)
 	if err != nil {
 		return err
 	}
@@ -30,4 +38,7 @@ var consoleCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(consoleCmd)
+	//revive:disable:line-length-limit
+	consoleCmd.Flags().String("service", "", "Service path to access (defaults to AWS console homepage)")
+	//revive:enable:line-length-limit
 }
