@@ -18,24 +18,14 @@ type AssumeRoleOptions struct {
 	MfaPrompt   MfaPrompt
 }
 
-// revive:disable:cyclomatic
-
 // AssumeRole executes an AWS role assumption
 func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	logger.InfoMsg("assuming role")
 	logger.DebugMsg(fmt.Sprintf("assumerole parameters: %+v", options))
 
-	var err error
-
-	if options.RoleName == "" {
-		return Creds{}, fmt.Errorf("role name cannot be empty")
-	}
-
-	if options.AccountID == "" {
-		options.AccountID, err = c.AccountID()
-		if err != nil {
-			return Creds{}, err
-		}
+	err := c.assumeRolePreflight(&options)
+	if err != nil {
+		return Creds{}, err
 	}
 
 	partition, err := c.partition()
@@ -49,13 +39,6 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 		options.RoleName,
 	)
 	logger.InfoMsg(fmt.Sprintf("generated target arn: %s", arn))
-
-	if options.SessionName == "" {
-		options.SessionName, err = c.UserName()
-		if err != nil {
-			return Creds{}, err
-		}
-	}
 
 	// TODO: add validation for lifetime (between 900 and 3600 or 0)
 	params := &sts.AssumeRoleInput{
@@ -90,4 +73,26 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 
 	newCreds, err := NewFromStsSdk(resp.Credentials)
 	return newCreds, err
+}
+
+func (c Creds) assumeRolePreflight(options *AssumeRoleOptions) error {
+	if options.RoleName == "" {
+		return Creds{}, fmt.Errorf("role name cannot be empty")
+	}
+
+	if options.AccountID == "" {
+		options.AccountID, err = c.AccountID()
+		if err != nil {
+			return Creds{}, err
+		}
+	}
+
+	if options.SessionName == "" {
+		options.SessionName, err = c.UserName()
+		if err != nil {
+			return Creds{}, err
+		}
+	}
+
+	return nil
 }
