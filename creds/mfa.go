@@ -13,8 +13,11 @@ type MfaPrompt interface {
 }
 
 func (c Creds) handleMfa(useMfa bool, mfaCode string, mfaPrompt MfaPrompt) (string, string, error) {
+	logger.InfoMsg("handling mfa options")
+
 	// TODO: add validation for mfa code (6 digit int)
 	if !useMfa && mfaCode == "" {
+		logger.InfoMsg("mfa is disabled")
 		return "", "", nil
 	}
 	mfaSerial, err := c.MfaArn()
@@ -22,11 +25,14 @@ func (c Creds) handleMfa(useMfa bool, mfaCode string, mfaPrompt MfaPrompt) (stri
 		return "", "", err
 	}
 	if mfaCode != "" {
+		logger.InfoMsg("mfa code already provided")
 		return mfaCode, mfaSerial, nil
 	}
 	if mfaPrompt == nil {
+		logger.InfoMsg("using default mfa prompt")
 		mfaPrompt = &DefaultMfaPrompt{}
 	}
+	logger.InfoMsg("prompting for mfa code")
 	mfaCode, err = mfaPrompt.Prompt(mfaSerial)
 	if err != nil {
 		return "", "", err

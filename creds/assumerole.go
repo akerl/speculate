@@ -18,16 +18,20 @@ type AssumeRoleOptions struct {
 }
 
 func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
+	logger.InfoMsg("assuming role")
+	logger.DebugMsg(fmt.Sprintf("assumerole parameters: %+v", options))
+
+	var err error
+
 	if options.RoleName == "" {
 		return Creds{}, fmt.Errorf("role name cannot be empty")
 	}
 
 	if options.AccountID == "" {
-		identity, err := c.identity()
+		options.AccountID, err = c.AccountID()
 		if err != nil {
 			return Creds{}, err
 		}
-		options.AccountID = *identity.Account
 	}
 
 	partition, err := c.partition()
@@ -40,6 +44,14 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 		options.AccountID,
 		options.RoleName,
 	)
+	logger.InfoMsg(fmt.Sprintf("generated target arn: %s", arn))
+
+	if options.SessionName == "" {
+		options.SessionName, err = c.UserName
+		if err != nil {
+			return Creds{}, err
+		}
+	}
 
 	// TODO: add validation for lifetime (between 900 and 3600 or 0)
 	params := &sts.AssumeRoleInput{
@@ -66,6 +78,7 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	if err != nil {
 		return Creds{}, err
 	}
+	logger.InfoMsg("running assumerole api call")
 	resp, err := client.AssumeRole(params)
 	if err != nil {
 		return Creds{}, err

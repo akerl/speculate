@@ -34,6 +34,7 @@ var Translations = map[string]map[string]string{
 
 // Translate converts credentials based on a map of field names
 func (c Creds) Translate(dictionary map[string]string) map[string]string {
+	logger.InfoMsg(fmt.Sprintf("translating using dictionary: %+v", dictionary))
 	old := c.ToMap()
 	new := make(map[string]string)
 	for k, v := range dictionary {
@@ -44,6 +45,7 @@ func (c Creds) Translate(dictionary map[string]string) map[string]string {
 
 // ToMap returns the credentials as a map of field names to strings
 func (c Creds) ToMap() map[string]string {
+	logger.InfoMsg("converting credentials to map")
 	return map[string]string{
 		"AccessKey":    c.AccessKey,
 		"SecretKey":    c.SecretKey,
@@ -54,11 +56,13 @@ func (c Creds) ToMap() map[string]string {
 
 // ToSdk returns an AWS SDK Credentials object
 func (c *Creds) ToSdk() *credentials.Credentials {
+	logger.InfoMsg("converting credentials to sdk")
 	return credentials.NewStaticCredentials(c.AccessKey, c.SecretKey, c.SessionToken)
 }
 
 // ToEnvVars returns environment variables suitable for eval-ing into the shell
 func (c Creds) ToEnvVars() []string {
+	logger.InfoMsg("converting credentials to env vars")
 	envCreds := c.Translate(Translations["envvar"])
 	var res []string
 	for k, v := range envCreds {
@@ -75,6 +79,8 @@ type consoleTokenResponse struct {
 }
 
 func (c Creds) toConsoleToken() (string, error) {
+	logger.InfoMsg("generating console token")
+
 	args := []string{"?Action=getSigninToken"}
 
 	consoleCreds := c.Translate(Translations["console"])
@@ -94,6 +100,7 @@ func (c Creds) toConsoleToken() (string, error) {
 	baseURL := fmt.Sprintf(consoleTokenURL, namespace)
 	url := strings.Join([]string{baseURL, "/federation", argString}, "")
 
+	logger.InfoMsg("making console token http request")
 	resp, err := http.Get(url)
 
 	if err != nil {
@@ -109,6 +116,7 @@ func (c Creds) toConsoleToken() (string, error) {
 		return "", err
 	}
 
+	logger.InfoMsg("unmarshalling console token json response")
 	tokenObj := consoleTokenResponse{}
 	if err := json.Unmarshal(body, &tokenObj); err != nil {
 		return "", err
@@ -124,6 +132,7 @@ func (c Creds) ToConsoleURL() (string, error) {
 
 // ToCustomConsoleURL returns a console URL with a custom path
 func (c Creds) ToCustomConsoleURL(dest string) (string, error) {
+	logger.InfoMsg("generating console url")
 	consoleToken, err := c.toConsoleToken()
 	if err != nil {
 		return "", err
@@ -139,6 +148,7 @@ func (c Creds) ToCustomConsoleURL(dest string) (string, error) {
 	} else {
 		targetURL = fmt.Sprintf("https://console.%s.com/%s", namespace, dest)
 	}
+	logger.InfoMsg(fmt.Sprintf("using destination url %s", targetURL))
 	urlParts := []string{
 		baseURL,
 		"/federation",
@@ -155,6 +165,7 @@ func (c Creds) ToCustomConsoleURL(dest string) (string, error) {
 
 // ToSignoutURL returns a signout URL for the console
 func (c Creds) ToSignoutURL() (string, error) {
+	logger.InfoMsg("generating signout url")
 	namespace, err := c.namespace()
 	if err != nil {
 		return "", err
