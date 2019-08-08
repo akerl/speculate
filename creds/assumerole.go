@@ -18,7 +18,8 @@ type AssumeRoleOptions struct {
 	MfaPrompt   MfaPrompt
 }
 
-// revive:disable-next-line:cyclomatic
+// revive:disable:cyclomatic
+
 // AssumeRole executes an AWS role assumption
 func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	logger.InfoMsg("assuming role")
