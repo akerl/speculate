@@ -49,7 +49,7 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	logger.InfoMsg(fmt.Sprintf("generated target arn: %s", arn))
 
 	if options.SessionName == "" {
-		options.SessionName, err = c.UserName
+		options.SessionName, err = c.UserName()
 		if err != nil {
 			return Creds{}, err
 		}

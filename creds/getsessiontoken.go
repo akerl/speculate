@@ -1,6 +1,8 @@
 package creds
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/service/sts"
 )
 
