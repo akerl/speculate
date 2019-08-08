@@ -76,21 +76,23 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 }
 
 func (c Creds) assumeRolePreflight(options *AssumeRoleOptions) error {
+	var err error
+
 	if options.RoleName == "" {
-		return Creds{}, fmt.Errorf("role name cannot be empty")
+		return fmt.Errorf("role name cannot be empty")
 	}
 
 	if options.AccountID == "" {
 		options.AccountID, err = c.AccountID()
 		if err != nil {
-			return Creds{}, err
+			return err
 		}
 	}
 
 	if options.SessionName == "" {
 		options.SessionName, err = c.UserName()
 		if err != nil {
-			return Creds{}, err
+			return err
 		}
 	}
 
