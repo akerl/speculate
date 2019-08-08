@@ -12,6 +12,8 @@ type MfaPrompt interface {
 	Prompt(string) (string, error)
 }
 
+// revive:disable-next-line:flag-parameter
+// revive:disable-next-line:modifies-parameter
 func (c Creds) handleMfa(useMfa bool, mfaCode string, mfaPrompt MfaPrompt) (string, string, error) {
 	logger.InfoMsg("handling mfa options")
 

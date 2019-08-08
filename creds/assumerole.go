@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 )
 
+// AssumeRoleOptions defines the available parameters for assuming roles
 type AssumeRoleOptions struct {
 	RoleName    string
 	AccountID   string
@@ -17,6 +18,7 @@ type AssumeRoleOptions struct {
 	MfaPrompt   MfaPrompt
 }
 
+// AssumeRole executes an AWS role assumption
 func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	logger.InfoMsg("assuming role")
 	logger.DebugMsg(fmt.Sprintf("assumerole parameters: %+v", options))

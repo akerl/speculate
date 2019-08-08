@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// revive:disable-next-line:cyclomatic
 func envRunner(cmd *cobra.Command, args []string) error {
 	var err error
 	c := creds.Creds{}
