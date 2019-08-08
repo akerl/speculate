@@ -214,6 +214,9 @@ func (c Creds) Client() *sts.STS {
 	if c.AccessKey != "" {
 		config.WithCredentials(c.ToSdk())
 	}
+	if c.Region != "" {
+		config.WithRegion(c.Region)
+	}
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		Config:            *config,
 		SharedConfigState: session.SharedConfigEnable,
