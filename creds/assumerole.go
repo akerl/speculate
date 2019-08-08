@@ -19,6 +19,7 @@ type AssumeRoleOptions struct {
 }
 
 // AssumeRole executes an AWS role assumption
+// revive:disable-next-line:cyclomatic
 func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	logger.InfoMsg("assuming role")
 	logger.DebugMsg(fmt.Sprintf("assumerole parameters: %+v", options))

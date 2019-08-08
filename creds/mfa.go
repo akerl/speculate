@@ -13,7 +13,6 @@ type MfaPrompt interface {
 }
 
 // revive:disable-next-line:flag-parameter
-// revive:disable-next-line:modifies-parameter
 func (c Creds) handleMfa(useMfa bool, mfaCode string, mfaPrompt MfaPrompt) (string, string, error) {
 	logger.InfoMsg("handling mfa options")
 
@@ -32,9 +31,11 @@ func (c Creds) handleMfa(useMfa bool, mfaCode string, mfaPrompt MfaPrompt) (stri
 	}
 	if mfaPrompt == nil {
 		logger.InfoMsg("using default mfa prompt")
+		// revive:disable-next-line:modifies-parameter
 		mfaPrompt = &DefaultMfaPrompt{}
 	}
 	logger.InfoMsg("prompting for mfa code")
+	// revive:disable-next-line:modifies-parameter
 	mfaCode, err = mfaPrompt.Prompt(mfaSerial)
 	if err != nil {
 		return "", "", err
