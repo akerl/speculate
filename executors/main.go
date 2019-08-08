@@ -17,7 +17,7 @@ var logger = log.NewLogger("speculate")
 
 const (
 	mfaCodeRegexString   = `^\d{6}$`
-	mfaArnRegexString    = `^arn:aws(?:-gov)?:iam::\d+:mfa/[\w+=,.@-]+$`
+	mfaArnRegexString    = `^arn:aws(?:-us-gov)?:iam::\d+:mfa/[\w+=,.@-]+$`
 	iamEntityRegexString = `^[\w+=,.@-]+$`
 	accountIDRegexString = `^\d{12}$`
 )
