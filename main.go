@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/akerl/speculate/cmd"
-	"github.com/akerl/speculate/helpers"
+	"github.com/akerl/speculate/v2/cmd"
+	"github.com/akerl/speculate/v2/helpers"
 )
 
 func main() {
