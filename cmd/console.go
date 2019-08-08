@@ -38,7 +38,6 @@ var consoleCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(consoleCmd)
-	//revive:disable:line-length-limit
-	consoleCmd.Flags().String("service", "", "Service path to access (defaults to AWS console homepage)")
-	//revive:enable:line-length-limit
+	consoleCmd.Flags().String(
+		"service", "", "Service path to access (defaults to AWS console homepage)")
 }

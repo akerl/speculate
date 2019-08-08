@@ -40,7 +40,6 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	)
 	logger.InfoMsg(fmt.Sprintf("generated target arn: %s", arn))
 
-	// TODO: add validation for lifetime (between 900 and 3600 or 0)
 	params := &sts.AssumeRoleInput{
 		RoleArn:         &arn,
 		RoleSessionName: &options.SessionName,
@@ -96,5 +95,5 @@ func (c Creds) assumeRolePreflight(options *AssumeRoleOptions) error {
 		}
 	}
 
-	return nil
+	return validateLifetime(options.Lifetime)
 }

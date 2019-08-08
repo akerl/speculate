@@ -4,8 +4,15 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
+
+const (
+	mfaCodeRegexString = `^\d{6}$`
+)
+
+var mfaCodeRegex = regexp.MustCompile(mfaCodeRegexString)
 
 // MfaPrompt defines an object which recieves an Mfa ARN and returns an Mfa code
 type MfaPrompt interface {
@@ -16,7 +23,6 @@ type MfaPrompt interface {
 func (c Creds) handleMfa(useMfa bool, mfaCode string, mfaPrompt MfaPrompt) (string, string, error) {
 	logger.InfoMsg("handling mfa options")
 
-	// TODO: add validation for mfa code (6 digit int)
 	if !useMfa && mfaCode == "" {
 		logger.InfoMsg("mfa is disabled")
 		return "", "", nil
@@ -27,6 +33,11 @@ func (c Creds) handleMfa(useMfa bool, mfaCode string, mfaPrompt MfaPrompt) (stri
 	}
 	if mfaCode != "" {
 		logger.InfoMsg("mfa code already provided")
+		err := validateMfa(mfaCode)
+		if err != nil {
+			return "", "", err
+		}
+
 		return mfaCode, mfaSerial, nil
 	}
 	if mfaPrompt == nil {
@@ -54,5 +65,18 @@ func (p *DefaultMfaPrompt) Prompt(_ string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.TrimSpace(mfa), nil
+	trimmed := strings.TrimSpace(mfa)
+	err = validateMfa(trimmed)
+	if err != nil {
+		return "", err
+	}
+	return trimmed, nil
+}
+
+func validateMfa(code string) error {
+	logger.InfoMsg("validating mfa")
+	if mfaCodeRegex.MatchString(code) {
+		return nil
+	}
+	return fmt.Errorf("provided mfa code does not match the necessary format")
 }

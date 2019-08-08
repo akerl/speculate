@@ -19,7 +19,11 @@ func (c Creds) GetSessionToken(options GetSessionTokenOptions) (Creds, error) {
 	logger.InfoMsg("getting session token")
 	logger.DebugMsg(fmt.Sprintf("getsessiontoken parameters: %+v", options))
 
-	// TODO: add validation for lifetime (between 900 and 3600 or 0)
+	err := validateLifetime(options.Lifetime)
+	if err != nil {
+		return Creds{}, err
+	}
+
 	params := &sts.GetSessionTokenInput{
 		DurationSeconds: &options.Lifetime,
 	}
