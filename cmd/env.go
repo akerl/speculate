@@ -3,38 +3,82 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/akerl/speculate/executors"
+	"github.com/akerl/speculate/v2/creds"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 )
 
+// revive:disable-next-line:cyclomatic
 func envRunner(cmd *cobra.Command, args []string) error {
-	var exec executors.Executor
 	var err error
+	c := creds.Creds{}
+	flags := cmd.Flags()
+
+	accountID, err := flags.GetString("account")
+	if err != nil {
+		return err
+	}
+
+	session, err := flags.GetString("session")
+	if err != nil {
+		return err
+	}
+
+	policy, err := flags.GetString("policy")
+	if err != nil {
+		return err
+	}
+
+	lifetime, err := flags.GetInt64("lifetime")
+	if err != nil {
+		return err
+	}
+
+	useMfa, err := flags.GetBool("mfa")
+	if err != nil {
+		return err
+	}
+
+	mfaCode, err := flags.GetString("mfacode")
+	if err != nil {
+		return err
+	}
 
 	switch len(args) {
 	case 0:
-		exec = &executors.Signin{}
-	case 1:
-		exec = &executors.Assumption{}
-		if err := exec.SetRoleName(args[0]); err != nil {
-			return err
+		if accountID != "" {
+			return fmt.Errorf("accountID is invalid for session tokens")
 		}
+		if session != "" {
+			return fmt.Errorf("session is invalid for session tokens")
+		}
+		if policy != "" {
+			return fmt.Errorf("policy is invalid for session tokens")
+		}
+		c, err = c.GetSessionToken(creds.GetSessionTokenOptions{
+			Lifetime: lifetime,
+			UseMfa:   useMfa,
+			MfaCode:  mfaCode,
+		})
+	case 1:
+		c, err = c.AssumeRole(creds.AssumeRoleOptions{
+			RoleName:    args[0],
+			AccountID:   accountID,
+			SessionName: session,
+			Policy:      policy,
+			Lifetime:    lifetime,
+			UseMfa:      useMfa,
+			MfaCode:     mfaCode,
+		})
 	default:
 		return fmt.Errorf("too many args provided. Check --help for more info")
 	}
 
-	flags := cmd.Flags()
-	if err := parseFlags(exec, flags); err != nil {
-		return err
-	}
-
-	creds, err := exec.Execute()
 	if err != nil {
 		return err
 	}
-	for _, line := range creds.ToEnvVars() {
+
+	for _, line := range c.ToEnvVars() {
 		fmt.Println(line)
 	}
 	return nil
@@ -56,57 +100,4 @@ func init() {
 	envCmd.Flags().BoolP("mfa", "m", false, "Use MFA when assuming role")
 	envCmd.Flags().String("mfacode", "", "Code to use for MFA")
 	//revive:enable:line-length-limit
-}
-
-//revive:disable-next-line:cyclomatic
-func parseFlags(exec executors.Executor, flags *pflag.FlagSet) error {
-	if val, err := flags.GetString("account"); err != nil {
-		return err
-	} else if val != "" {
-		if err := exec.SetAccountID(val); err != nil {
-			return err
-		}
-	}
-
-	if val, err := flags.GetString("session"); err != nil {
-		return err
-	} else if val != "" {
-		if err := exec.SetSessionName(val); err != nil {
-			return err
-		}
-	}
-
-	if val, err := flags.GetString("policy"); err != nil {
-		return err
-	} else if val != "" {
-		if err := exec.SetPolicy(val); err != nil {
-			return err
-		}
-	}
-
-	if val, err := flags.GetInt64("lifetime"); err != nil {
-		return err
-	} else if val != 0 {
-		if err := exec.SetLifetime(val); err != nil {
-			return err
-		}
-	}
-
-	if val, err := flags.GetBool("mfa"); err != nil {
-		return err
-	} else if val {
-		if err := exec.SetMfa(val); err != nil {
-			return err
-		}
-	}
-
-	if val, err := flags.GetString("mfacode"); err != nil {
-		return err
-	} else if val != "" {
-		if err := exec.SetMfaCode(val); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
