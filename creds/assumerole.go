@@ -21,7 +21,7 @@ type AssumeRoleOptions struct {
 // AssumeRole executes an AWS role assumption
 func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	logger.InfoMsg("assuming role")
-	logger.DebugMsg(fmt.Sprintf("assumerole parameters: %+v", options))
+	logger.DebugMsgf("assumerole parameters: %+v", options)
 
 	err := c.assumeRolePreflight(&options)
 	if err != nil {
@@ -38,7 +38,7 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 		options.AccountID,
 		options.RoleName,
 	)
-	logger.InfoMsg(fmt.Sprintf("generated target arn: %s", arn))
+	logger.InfoMsgf("generated target arn: %s", arn)
 
 	params := &sts.AssumeRoleInput{
 		RoleArn:         &arn,
