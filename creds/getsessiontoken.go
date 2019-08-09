@@ -1,8 +1,6 @@
 package creds
 
 import (
-	"fmt"
-
 	"github.com/aws/aws-sdk-go/service/sts"
 )
 
@@ -17,7 +15,7 @@ type GetSessionTokenOptions struct {
 // GetSessionToken executes an AWS session token request
 func (c Creds) GetSessionToken(options GetSessionTokenOptions) (Creds, error) {
 	logger.InfoMsg("getting session token")
-	logger.DebugMsg(fmt.Sprintf("getsessiontoken parameters: %+v", options))
+	logger.DebugMsgf("getsessiontoken parameters: %+v", options)
 
 	err := validateLifetime(options.Lifetime)
 	if err != nil {

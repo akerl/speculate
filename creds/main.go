@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/akerl/timber/log"
+	"github.com/akerl/timber/v2/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
@@ -28,11 +28,11 @@ func (c Creds) Session() (*session.Session, error) {
 	config := aws.NewConfig()
 	config.WithCredentialsChainVerboseErrors(true)
 	if c.AccessKey != "" {
-		logger.InfoMsg(fmt.Sprintf("setting session credentials to %s", c.AccessKey))
+		logger.InfoMsgf("setting session credentials to %s", c.AccessKey)
 		config.WithCredentials(c.ToSdk())
 	}
 	if c.Region != "" {
-		logger.InfoMsg(fmt.Sprintf("setting session region to %s", c.Region))
+		logger.InfoMsgf("setting session region to %s", c.Region)
 		config.WithRegion(c.Region)
 	}
 	return session.NewSessionWithOptions(session.Options{
@@ -67,7 +67,7 @@ func (c Creds) partition() (string, error) {
 		return "", err
 	}
 	pieces := strings.Split(*identity.Arn, ":")
-	logger.InfoMsg(fmt.Sprintf("found partition: %s", pieces[1]))
+	logger.InfoMsgf("found partition: %s", pieces[1])
 	return pieces[1], nil
 }
 
@@ -79,7 +79,7 @@ func (c Creds) namespace() (string, error) {
 	}
 	result, ok := namespaces[partition]
 	if ok {
-		logger.InfoMsg(fmt.Sprintf("found namespace: %s", result))
+		logger.InfoMsgf("found namespace: %s", result)
 		return result, nil
 	}
 	return "", fmt.Errorf("unknown partition: %s", partition)
@@ -92,7 +92,7 @@ func (c Creds) AccountID() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	logger.InfoMsg(fmt.Sprintf("found accountID: %s", *identity.Account))
+	logger.InfoMsgf("found accountID: %s", *identity.Account)
 	return *identity.Account, nil
 }
 
@@ -107,7 +107,7 @@ func (c Creds) MfaArn() (string, error) {
 		return "", fmt.Errorf("failed to parse MFA ARN for non-user: %s", *identity.Arn)
 	}
 	mfaArn := strings.Replace(*identity.Arn, ":user/", ":mfa/", 1)
-	logger.InfoMsg(fmt.Sprintf("found mfa arn: %s", mfaArn))
+	logger.InfoMsgf("found mfa arn: %s", mfaArn)
 	return mfaArn, nil
 }
 
@@ -120,6 +120,6 @@ func (c Creds) UserName() (string, error) {
 	}
 	arnChunks := strings.Split(*identity.Arn, "/")
 	userName := arnChunks[len(arnChunks)-1]
-	logger.InfoMsg(fmt.Sprintf("found user name: %s", userName))
+	logger.InfoMsgf("found user name: %s", userName)
 	return userName, nil
 }

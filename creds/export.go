@@ -34,7 +34,7 @@ var Translations = map[string]map[string]string{
 
 // Translate converts credentials based on a map of field names
 func (c Creds) Translate(dictionary map[string]string) map[string]string {
-	logger.InfoMsg(fmt.Sprintf("translating using dictionary: %+v", dictionary))
+	logger.InfoMsgf("translating using dictionary: %+v", dictionary)
 	old := c.ToMap()
 	new := make(map[string]string)
 	for k, v := range dictionary {
@@ -148,7 +148,7 @@ func (c Creds) ToCustomConsoleURL(dest string) (string, error) {
 	} else {
 		targetURL = fmt.Sprintf("https://console.%s.com/%s", namespace, dest)
 	}
-	logger.InfoMsg(fmt.Sprintf("using destination url %s", targetURL))
+	logger.InfoMsgf("using destination url %s", targetURL)
 	urlParts := []string{
 		baseURL,
 		"/federation",

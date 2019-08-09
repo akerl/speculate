@@ -9,10 +9,10 @@ import (
 
 // New initializes credentials from a map
 func New(argCreds map[string]string) (Creds, error) {
-	logger.InfoMsg(fmt.Sprintf(
+	logger.InfoMsgf(
 		"creating new creds from map with access key %s",
 		argCreds["AccessKey"],
-	))
+	)
 	required := []string{"AccessKey", "SecretKey", "SessionToken"}
 	for _, key := range required {
 		elem, ok := argCreds[key]
