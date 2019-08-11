@@ -1,3 +1,7 @@
+# 2.0.3 / 2019-08-11
+
+* [ENHANCEMENT] Update go.mod to remove cruft
+
 # 2.0.2 / 2019-08-09
 
 * [FEATURE] Set region when generating new creds
