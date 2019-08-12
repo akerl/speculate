@@ -22,8 +22,10 @@ func (c Creds) GetSessionToken(options GetSessionTokenOptions) (Creds, error) {
 		return Creds{}, err
 	}
 
-	params := &sts.GetSessionTokenInput{
-		DurationSeconds: &options.Lifetime,
+	params := &sts.GetSessionTokenInput{}
+
+	if options.Lifetime != 0 {
+		params.DurationSeconds = &options.Lifetime
 	}
 
 	tokenCode, serialNumber, err := c.handleMfa(

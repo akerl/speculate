@@ -41,10 +41,19 @@ func (c Creds) AssumeRole(options AssumeRoleOptions) (Creds, error) {
 	logger.InfoMsgf("generated target arn: %s", arn)
 
 	params := &sts.AssumeRoleInput{
-		RoleArn:         &arn,
-		RoleSessionName: &options.SessionName,
-		DurationSeconds: &options.Lifetime,
-		Policy:          &options.Policy,
+		RoleArn: &arn,
+	}
+
+	if options.Policy != "" {
+		params.Policy = &options.Policy
+	}
+
+	if options.Lifetime != 0 {
+		params.DurationSeconds = &options.Lifetime
+	}
+
+	if options.SessionName != "" {
+		params.RoleSessionName = &options.SessionName
 	}
 
 	tokenCode, serialNumber, err := c.handleMfa(
