@@ -80,3 +80,20 @@ func validateMfa(code string) error {
 	}
 	return fmt.Errorf("provided mfa code does not match the necessary format")
 }
+
+// MultiMfaPrompt allows a slice of sequential backends to check for Mfa
+type MultiMfaPrompt struct {
+	Backends []MfaPrompt
+}
+
+// Prompt iterates through the backends to find an Mfa code
+func (m *MultiMfaPrompt) Prompt(arn string) (string, error) {
+	logger.InfoMsgf("looking up %s in multi mfa prompt", arn)
+	for _, item := range m.Backends {
+		res, err := item.Prompt(arn)
+		if err != nil {
+			return res, nil
+		}
+	}
+	return "", fmt.Errorf("all backends failed to return mfa code")
+}
