@@ -1,3 +1,7 @@
+# 2.0.6 / 2019-08-12
+
+* [FEATURE] Support MultiMfaPrompt for chained Mfa lookups
+
 # 2.0.5 / 2019-08-12
 
 * [BUGFIX] Don't set parameters that don't exist
