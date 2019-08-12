@@ -1,3 +1,7 @@
+# 2.0.5 / 2019-08-12
+
+* [BUGFIX] Don't set parameters that don't exist
+
 # 2.0.4 / 2019-08-12
 
 * [BUGFIX] update timber dep to fix logging bug
