@@ -1,3 +1,7 @@
+# 2.0.7 / 2019-08-12
+
+* [BUGFIX] Correct MultiMfaPrompt chaining behavior
+
 # 2.0.6 / 2019-08-12
 
 * [FEATURE] Support MultiMfaPrompt for chained Mfa lookups

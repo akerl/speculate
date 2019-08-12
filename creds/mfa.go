@@ -89,11 +89,12 @@ type MultiMfaPrompt struct {
 // Prompt iterates through the backends to find an Mfa code
 func (m *MultiMfaPrompt) Prompt(arn string) (string, error) {
 	logger.InfoMsgf("looking up %s in multi mfa prompt", arn)
-	for _, item := range m.Backends {
+	for index, item := range m.Backends {
 		res, err := item.Prompt(arn)
-		if err != nil {
+		if err == nil {
 			return res, nil
 		}
+		logger.InfoMsgf("failed backend lookup %d with %s", index, err)
 	}
 	return "", fmt.Errorf("all backends failed to return mfa code")
 }
