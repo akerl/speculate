@@ -94,7 +94,7 @@ func (m *MultiMfaPrompt) Prompt(arn string) (string, error) {
 		if err == nil {
 			return res, nil
 		}
-		logger.InfoMsg("failed backend lookup %d with %s", index, err)
+		logger.InfoMsgf("failed backend lookup %d with %s", index, err)
 	}
 	return "", fmt.Errorf("all backends failed to return mfa code")
 }
