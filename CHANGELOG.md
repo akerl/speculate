@@ -1,3 +1,7 @@
+# 2.0.4 / 2019-08-12
+
+* [BUGFIX] update timber dep to fix logging bug
+
 # 2.0.3 / 2019-08-11
 
 * [ENHANCEMENT] Update go.mod to remove cruft
