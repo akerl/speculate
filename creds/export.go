@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -60,14 +61,32 @@ func (c *Creds) ToSdk() *credentials.Credentials {
 	return credentials.NewStaticCredentials(c.AccessKey, c.SecretKey, c.SessionToken)
 }
 
-// ToEnvVars returns environment variables suitable for eval-ing into the shell
+// ToEnvVars returns environment variables suitable for evaling on the current platform
 func (c Creds) ToEnvVars() []string {
-	logger.InfoMsg("converting credentials to env vars")
+	if runtime.GOOS == "windows" {
+		return c.ToWindowsEnvVars()
+	}
+	return c.ToLinuxEnvVars()
+}
+
+// ToLinuxEnvVars returns environment variables suitable for eval-ing into the POSIX shell
+func (c Creds) ToLinuxEnvVars() []string {
+	logger.InfoMsg("converting credentials to linux env vars")
+	return c.sprintf("export %s=%s")
+}
+
+// ToWindowsEnvVars returns environment variables suitable for eval-ing into Windows Powershell
+func (c Creds) ToWindowsEnvVars() []string {
+	logger.InfoMsg("converting credentials to windows env vars")
+	return c.sprintf("$env:%s = \"%s\"")
+}
+
+func (c Creds) sprintf(fmtStr string) []string {
 	envCreds := c.Translate(Translations["envvar"])
 	var res []string
 	for k, v := range envCreds {
 		if v != "" {
-			res = append(res, fmt.Sprintf("export %s=%s", k, v))
+			res = append(res, fmt.Sprintf(fmtStr, k, v))
 		}
 	}
 	sort.Strings(res)
