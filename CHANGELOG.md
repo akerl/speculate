@@ -1,3 +1,7 @@
+# 2.0.8 / 2019/08-15
+
+* [FEATURE] Support platform-specific env vars for creds.ToEnvVars
+
 # 2.0.7 / 2019-08-12
 
 * [BUGFIX] Correct MultiMfaPrompt chaining behavior
