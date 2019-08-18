@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"runtime"
 	"sort"
 	"strings"
@@ -79,6 +80,19 @@ func (c Creds) ToLinuxEnvVars() []string {
 func (c Creds) ToWindowsEnvVars() []string {
 	logger.InfoMsg("converting credentials to windows env vars")
 	return c.sprintf("$env:%s = \"%s\"")
+}
+
+// ToEnviron returns a golang os.Environ object built from the current env plus these credentials
+func (c Creds) ToEnviron() []string {
+	logger.InfoMsg("converting credentials to golang-style Environ")
+	env := os.Environ()
+	var newEnv []string
+	for _, item := range env {
+		if !strings.HasPrefix(item, "AWS_") {
+			newEnv = append(newEnv, item)
+		}
+	}
+	return append(newEnv, c.sprintf("%s=%s")...)
 }
 
 func (c Creds) sprintf(fmtStr string) []string {
