@@ -1,4 +1,9 @@
-# 2.0.8 / 2019/08-15
+# 2.1.0 / 2019-08-19
+
+* [FEATURE] Add creds.ToEnviron() helper
+* [FEATURE] Add creds.Exec helper
+
+# 2.0.8 / 2019-08-15
 
 * [FEATURE] Support platform-specific env vars for creds.ToEnvVars
 
