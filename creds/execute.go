@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// ExecResult returns the results of executing a command
 type ExecResult struct {
 	Error    error  `json:"error"`
 	ExitCode int    `json:"exitcode"`
