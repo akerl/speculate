@@ -1,3 +1,7 @@
+# 2.1.1 / 2019-08-19
+
+* [BUGFIX] fix version tagging
+
 # 2.1.0 / 2019-08-19
 
 * [FEATURE] Add creds.ToEnviron() helper
