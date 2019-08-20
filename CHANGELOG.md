@@ -1,3 +1,7 @@
+# 2.1.2 / 2019-08-20
+
+* [BUGFIX] Additional fix for version tags
+'
 # 2.1.1 / 2019-08-19
 
 * [BUGFIX] fix version tagging
