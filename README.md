@@ -47,8 +47,9 @@ Usage:
   speculate env ROLENAME [flags]
 
 Flags:
-  -a, --account string   Account ID to assume role on (defaults to source account
-  -l, --lifetime int     Set lifetime of credentials in seconds (defaults to 3600 seconds / 1 hour, min 900, max 3600) (default 3600)
+  -a, --account string   Account ID to assume role on (defaults to source account)
+  -h, --help             help for env
+  -l, --lifetime int     Set lifetime of credentials in seconds between 900 and 43200 (default 3600)
   -m, --mfa              Use MFA when assuming role
       --mfacode string   Code to use for MFA
       --policy string    Set a IAM policy in JSON for the assumed credentials
