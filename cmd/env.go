@@ -86,7 +86,7 @@ func envRunner(cmd *cobra.Command, args []string) error {
 
 var envCmd = &cobra.Command{
 	Use:   "env [ROLENAME]",
-	Short: "Generate temporary credentials, either by assuming a role or requesting a session token",
+	Short: "Generate temporary credentials by assuming a role or requesting a session token",
 	RunE:  envRunner,
 }
 
