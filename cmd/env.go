@@ -93,9 +93,9 @@ var envCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(envCmd)
 	//revive:disable:line-length-limit
-	envCmd.Flags().StringP("account", "a", "", "Account ID to assume role on (defaults to source account")
+	envCmd.Flags().StringP("account", "a", "", "Account ID to assume role on (defaults to source account)")
 	envCmd.Flags().StringP("session", "s", "", "Set session name for assumed role (defaults to origin user name)")
-	envCmd.Flags().Int64P("lifetime", "l", 3600, "Set lifetime of credentials in seconds (defaults to 3600 seconds / 1 hour, min 900, max 3600)")
+	envCmd.Flags().Int64P("lifetime", "l", creds.SessionLifetimeDefault, fmt.Sprintf("Set lifetime of credentials in seconds between %d and %d", creds.SessionLifetimeMin, creds.SessionLifetimeMax))
 	envCmd.Flags().String("policy", "", "Set a IAM policy in JSON for the assumed credentials")
 	envCmd.Flags().BoolP("mfa", "m", false, "Use MFA when assuming role")
 	envCmd.Flags().String("mfacode", "", "Code to use for MFA")
