@@ -85,8 +85,8 @@ func envRunner(cmd *cobra.Command, args []string) error {
 }
 
 var envCmd = &cobra.Command{
-	Use:   "env ROLENAME",
-	Short: "Print environment variables for an assumed role",
+	Use:   "env [ROLENAME]",
+	Short: "Generate temporary credentials, either by assuming a role or requesting a session token",
 	RunE:  envRunner,
 }
 
@@ -99,11 +99,13 @@ func init() {
 		"lifetime", "l",
 		0,
 		fmt.Sprintf(
-			"Set lifetime of credentials in seconds. For SessionToken, must be between %d and %d. For AssumeRole, must be between %d and %d",
+			"Set lifetime of credentials in seconds. For SessionToken, must be between %d and %d (default %d). For AssumeRole, must be between %d and %d (default %d)",
 			creds.SessionTokenLifetimeLimits.Min,
 			creds.SessionTokenLifetimeLimits.Max,
+			creds.SessionTokenLifetimeLimits.Default,
 			creds.AssumeRoleLifetimeLimits.Min,
 			creds.AssumeRoleLifetimeLimits.Max,
+			creds.AssumeRoleLifetimeLimits.Default,
 		),
 	)
 	envCmd.Flags().String("policy", "", "Set a IAM policy in JSON for the assumed credentials")
