@@ -14,10 +14,12 @@ type GetSessionTokenOptions struct {
 
 // GetSessionToken executes an AWS session token request
 func (c Creds) GetSessionToken(options GetSessionTokenOptions) (Creds, error) {
+	var err error
+
 	logger.InfoMsg("getting session token")
 	logger.DebugMsgf("getsessiontoken parameters: %+v", options)
 
-	err := validateLifetime(options.Lifetime)
+	options.Lifetime, err = validateLifetime(options.Lifetime, SessionTokenLifetimeLimits)
 	if err != nil {
 		return Creds{}, err
 	}

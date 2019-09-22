@@ -41,15 +41,15 @@ The env command accepts some options for controlling which account to assume a r
 
 ```
 # speculate env --help
-Print environment variables for an assumed role
+Generate temporary credentials, either by assuming a role or requesting a session token
 
 Usage:
-  speculate env ROLENAME [flags]
+  speculate env [ROLENAME] [flags]
 
 Flags:
   -a, --account string   Account ID to assume role on (defaults to source account)
   -h, --help             help for env
-  -l, --lifetime int     Set lifetime of credentials in seconds between 900 and 43200 (default 3600)
+  -l, --lifetime int     Set lifetime of credentials in seconds. For SessionToken, must be between 900 and 129600 (default 3600). For AssumeRole, must be between 900 and 43200 (default 3600)
   -m, --mfa              Use MFA when assuming role
       --mfacode string   Code to use for MFA
       --policy string    Set a IAM policy in JSON for the assumed credentials

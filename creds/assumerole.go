@@ -105,5 +105,6 @@ func (c Creds) assumeRolePreflight(options *AssumeRoleOptions) error {
 		}
 	}
 
-	return validateLifetime(options.Lifetime)
+	options.Lifetime, err = validateLifetime(options.Lifetime, AssumeRoleLifetimeLimits)
+	return err
 }

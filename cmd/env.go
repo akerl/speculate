@@ -85,8 +85,8 @@ func envRunner(cmd *cobra.Command, args []string) error {
 }
 
 var envCmd = &cobra.Command{
-	Use:   "env ROLENAME",
-	Short: "Print environment variables for an assumed role",
+	Use:   "env [ROLENAME]",
+	Short: "Generate temporary credentials by assuming a role or requesting a session token",
 	RunE:  envRunner,
 }
 
@@ -95,7 +95,19 @@ func init() {
 	//revive:disable:line-length-limit
 	envCmd.Flags().StringP("account", "a", "", "Account ID to assume role on (defaults to source account)")
 	envCmd.Flags().StringP("session", "s", "", "Set session name for assumed role (defaults to origin user name)")
-	envCmd.Flags().Int64P("lifetime", "l", creds.SessionLifetimeDefault, fmt.Sprintf("Set lifetime of credentials in seconds between %d and %d", creds.SessionLifetimeMin, creds.SessionLifetimeMax))
+	envCmd.Flags().Int64P(
+		"lifetime", "l",
+		0,
+		fmt.Sprintf(
+			"Set lifetime of credentials in seconds. For SessionToken, must be between %d and %d (default %d). For AssumeRole, must be between %d and %d (default %d)",
+			creds.SessionTokenLifetimeLimits.Min,
+			creds.SessionTokenLifetimeLimits.Max,
+			creds.SessionTokenLifetimeLimits.Default,
+			creds.AssumeRoleLifetimeLimits.Min,
+			creds.AssumeRoleLifetimeLimits.Max,
+			creds.AssumeRoleLifetimeLimits.Default,
+		),
+	)
 	envCmd.Flags().String("policy", "", "Set a IAM policy in JSON for the assumed credentials")
 	envCmd.Flags().BoolP("mfa", "m", false, "Use MFA when assuming role")
 	envCmd.Flags().String("mfacode", "", "Code to use for MFA")
