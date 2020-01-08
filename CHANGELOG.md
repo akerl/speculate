@@ -1,3 +1,7 @@
+# 2.1.3 / 2020-01-08
+
+* [ENHANCEMENT] Update dependencies
+
 # 2.1.2 / 2019-08-20
 
 * [BUGFIX] Additional fix for version tags
