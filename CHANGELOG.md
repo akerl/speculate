@@ -1,3 +1,7 @@
+# 2.1.4 / 2020-02-11
+
+* [ENHANCEMENT] Update dependencies
+
 # 2.1.3 / 2020-01-08
 
 * [ENHANCEMENT] Update dependencies
