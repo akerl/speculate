@@ -1,9 +1,9 @@
 speculate
 =========
 
-[![Build Status](https://img.shields.io/travis/com/akerl/speculate.svg)](https://travis-ci.com/akerl/speculate)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/akerl/speculate/Build)](https://github.com/akerl/speculate/actions))
 [![GitHub release](https://img.shields.io/github/release/akerl/speculate.svg)](https://github.com/akerl/speculate/releases)
-[![MIT Licensed](https://img.shields.io/badge/license-MIT-green.svg)](https://tldrlegal.com/license/mit-license)
+[![License](https://img.shields.io/github/license/akerl/speculate)](https://github.com/akerl/speculate/blob/master/LICENSE)
 
 Tool for assuming roles in AWS accounts
 
