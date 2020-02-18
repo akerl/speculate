@@ -17,10 +17,16 @@ var logger = log.NewLogger("speculate")
 
 var userAgentItems = [][]string{{"speculate", version.Version}}
 
+// UserAgentItem defines an entry in the HTTP User Agent field
+type UserAgentItem struct {
+	Name, Version string
+	Extra         []string
+}
+
 // Creds defines a set of AWS credentials
 type Creds struct {
 	AccessKey, SecretKey, SessionToken, Region string
-	UserAgent                                  [][]string
+	UserAgentItems                             []UserAgentItem
 }
 
 var namespaces = map[string]string{
@@ -30,8 +36,8 @@ var namespaces = map[string]string{
 
 func (c Creds) setUserAgent(sess *session.Session) {
 	sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler("speculate", version.Version))
-	for _, x := range c.UserAgent {
-		sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler(x...))
+	for _, x := range c.UserAgentItems {
+		sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler(x.Name, x.Version, x.Extra...))
 	}
 }
 
