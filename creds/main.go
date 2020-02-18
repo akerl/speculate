@@ -30,7 +30,7 @@ var namespaces = map[string]string{
 
 func (c Creds) setUserAgent(sess *session.Session) {
 	sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler("speculate", version.Version))
-	for x := range c.UserAgent {
+	for _, x := range c.UserAgent {
 		sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler(x...))
 	}
 }
