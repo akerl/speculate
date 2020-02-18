@@ -15,12 +15,15 @@ import (
 
 var logger = log.NewLogger("speculate")
 
-var userAgentItems = [][]string{{"speculate", version.Version}}
-
 // UserAgentItem defines an entry in the HTTP User Agent field
 type UserAgentItem struct {
 	Name, Version string
 	Extra         []string
+}
+
+var speculateUserAgentItem = UserAgentItem{
+	Name:    "speculate",
+	Version: version.Version,
 }
 
 // Creds defines a set of AWS credentials
@@ -34,10 +37,15 @@ var namespaces = map[string]string{
 	"aws-us-gov": "amazonaws-us-gov",
 }
 
+func addUserAgentHandler(sess *session.Session, item UserAgentItem) {
+	h := request.MakeAddToUserAgentHandler(item.Name, item.Version, item.Extra...)
+	sess.Handlers.Build.PushBack(h)
+}
+
 func (c Creds) setUserAgent(sess *session.Session) {
-	sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler("speculate", version.Version))
+	addUserAgentHandler(sess, speculateUserAgentItem)
 	for _, x := range c.UserAgentItems {
-		sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler(x.Name, x.Version, x.Extra...))
+		addUserAgentHandler(sess, x)
 	}
 }
 
