@@ -4,16 +4,15 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-)
 
-// Version is overridden by link flags during build
-var Version = "unset"
+	"github.com/akerl/speculate/v2/version"
+)
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version of speculate",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("%s\n", Version)
+		fmt.Printf("%s\n", version.Version)
 	},
 }
 

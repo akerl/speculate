@@ -6,20 +6,33 @@ import (
 
 	"github.com/akerl/timber/v2/log"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
+
+	"github.com/akerl/speculate/v2/version"
 )
 
 var logger = log.NewLogger("speculate")
 
+var userAgentItems = [][]string{{"speculate", version.Version}}
+
 // Creds defines a set of AWS credentials
 type Creds struct {
 	AccessKey, SecretKey, SessionToken, Region string
+	UserAgent                                  [][]string
 }
 
 var namespaces = map[string]string{
 	"aws":        "aws.amazon",
 	"aws-us-gov": "amazonaws-us-gov",
+}
+
+func (c Creds) setUserAgent(sess *session.Session) {
+	sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler("speculate", version.Version))
+	for x := range c.UserAgent {
+		sess.Handlers.Build.PushBack(request.MakeAddToUserAgentHandler(x...))
+	}
 }
 
 // Session returns an AWS SDK session suitable for making API clients
@@ -35,10 +48,15 @@ func (c Creds) Session() (*session.Session, error) {
 		logger.InfoMsgf("setting session region to %s", c.Region)
 		config.WithRegion(c.Region)
 	}
-	return session.NewSessionWithOptions(session.Options{
+	sess, err := session.NewSessionWithOptions(session.Options{
 		Config:            *config,
 		SharedConfigState: session.SharedConfigEnable,
 	})
+	if err != nil {
+		return sess, err
+	}
+	c.setUserAgent(sess)
+	return sess, nil
 }
 
 // Client returns an AWS STS client for these creds
