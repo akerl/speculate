@@ -55,5 +55,6 @@ func (c Creds) GetSessionToken(options GetSessionTokenOptions) (Creds, error) {
 
 	newCreds, err := NewFromStsSdk(resp.Credentials)
 	newCreds.Region = c.Region
+	newCreds.UserAgentItems = c.UserAgentItems
 	return newCreds, err
 }
