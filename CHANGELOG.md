@@ -1,3 +1,7 @@
+# 2.2.0 / 2020-02-19
+
+* [FEATURE] Set user agent field
+
 # 2.1.4 / 2020-02-11
 
 * [ENHANCEMENT] Update dependencies
