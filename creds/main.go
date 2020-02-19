@@ -89,7 +89,13 @@ func (c Creds) identity() (*sts.GetCallerIdentityOutput, error) {
 		return nil, err
 	}
 	logger.InfoMsg("looking up identity")
-	return client.GetCallerIdentity(&sts.GetCallerIdentityInput{})
+	res, err := client.GetCallerIdentity(&sts.GetCallerIdentityInput{})
+	if err != nil {
+		return nil, fmt.Errorf(
+			"looking up credential failed. this occurs if your AWS keys are invalid or disabled",
+		)
+	}
+	return res, nil
 }
 
 func (c Creds) partition() (string, error) {
