@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"os/exec"
 	"strings"
+
+	"github.com/mattn/go-shellwords"
 )
 
 // ExecResult returns the results of executing a command
@@ -14,10 +16,18 @@ type ExecResult struct {
 	StdErr   string `json:"stderr"`
 }
 
+// StringToCommand converts a string to a command slice for use in Exec
+func StringToCommand(raw string) ([]string, error) {
+	return shellwords.Parse(raw)
+}
+
 // ExecString runs a simple command with the provided credentials
 func (c Creds) ExecString(command string) ExecResult {
-	commandSlice := strings.Split(command, " ")
-	return c.Exec(commandSlice)
+	args, err := StringToCommand(command)
+	if err != nil {
+		return ExecResult{}, err
+	}
+	return c.Exec(args)
 }
 
 // Exec runs a command with the provided credentials
