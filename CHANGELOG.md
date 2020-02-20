@@ -1,3 +1,7 @@
+# 2.3.2 / 2020-02-20
+
+* [ENHANCEMENT] Update deps
+
 # 2.3.1 / 2020-02-20
 
 * [BUGFIX] Use shellwords library to properly split Exec input
