@@ -3,7 +3,6 @@ package creds
 import (
 	"bytes"
 	"os/exec"
-	"strings"
 
 	"github.com/mattn/go-shellwords"
 )
@@ -25,7 +24,7 @@ func StringToCommand(raw string) ([]string, error) {
 func (c Creds) ExecString(command string) ExecResult {
 	args, err := StringToCommand(command)
 	if err != nil {
-		return ExecResult{}, err
+		return ExecResult{Error: err}
 	}
 	return c.Exec(args)
 }
