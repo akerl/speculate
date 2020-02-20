@@ -1,3 +1,7 @@
+# 2.3.1 / 2020-02-20
+
+* [BUGFIX] Use shellwords library to properly split Exec input
+
 # 2.3.0 / 2020-02-19
 
 * [ENHANCEMENT] Clarify error message if credentials are invalid/disabled
