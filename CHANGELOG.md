@@ -1,3 +1,7 @@
+# 2.4.0 / 2020-03-05
+
+* [FEATURE] Add writable MFA prompt to interface
+
 # 2.3.2 / 2020-02-20
 
 * [ENHANCEMENT] Update deps
