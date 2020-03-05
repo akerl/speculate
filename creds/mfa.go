@@ -124,8 +124,8 @@ func (m *MultiMfaPrompt) RetryText(arn string) string {
 	return writer.RetryText(arn)
 }
 
-func (m *MultiMfaPrompt) getWriter() *creds.WritableMfaPrompt {
-	for item := range m.Backends {
+func (m *MultiMfaPrompt) getWriter() WritableMfaPrompt {
+	for index, item := range m.Backends {
 		writer, ok := item.(WritableMfaPrompt)
 		if ok {
 			logger.InfoMsgf("found mfa writer with index %d", index)
