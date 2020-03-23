@@ -6,6 +6,7 @@ import (
 
 	"github.com/akerl/timber/v2/log"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
@@ -54,6 +55,7 @@ func (c Creds) Session() (*session.Session, error) {
 	logger.InfoMsg("creating new session")
 	config := aws.NewConfig()
 	config.WithCredentialsChainVerboseErrors(true)
+	config.WithSTSRegionalEndpoint(endpoints.RegionalSTSEndpoint)
 	if c.AccessKey != "" {
 		logger.InfoMsgf("setting session credentials to %s", c.AccessKey)
 		config.WithCredentials(c.ToSdk())
