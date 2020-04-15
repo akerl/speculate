@@ -1,3 +1,7 @@
+# 2.5.1 / 2020-04-15
+
+* [ENHANCEMENT] Update deps
+
 # 2.5.0 / 2020-03-23
 
 * [FEATURE] Use STS regional endpoints for API requests
