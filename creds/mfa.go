@@ -61,12 +61,22 @@ func (c Creds) handleMfa(useMfa bool, mfaCode string, mfaPrompt MfaPrompt) (stri
 }
 
 // DefaultMfaPrompt defines the standard CLI-based MFA prompt
-type DefaultMfaPrompt struct{}
+type DefaultMfaPrompt struct {
+	PromptTextFunc func(string) string
+}
+
+func defaultPromptTextFunc(_ string) string {
+	return "MFA Code: "
+}
 
 // Prompt asks the user for their MFA token
-func (p *DefaultMfaPrompt) Prompt(_ string) (string, error) {
+func (p *DefaultMfaPrompt) Prompt(arn string) (string, error) {
 	mfaReader := bufio.NewReader(os.Stdin)
-	fmt.Fprint(os.Stderr, "MFA Code: ")
+	pf := p.PromptTextFunc
+	if pf == nil {
+		pf = defaultPromptTextFunc
+	}
+	fmt.Fprint(os.Stderr, pf(arn))
 	mfa, err := mfaReader.ReadString('\n')
 	if err != nil {
 		return "", err
