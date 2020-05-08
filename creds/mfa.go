@@ -72,7 +72,7 @@ func defaultPromptTextFunc(_ string) string {
 // Prompt asks the user for their MFA token
 func (p *DefaultMfaPrompt) Prompt(arn string) (string, error) {
 	mfaReader := bufio.NewReader(os.Stdin)
-	pf := PromptTextFunc
+	pf := p.PromptTextFunc
 	if pf == nil {
 		pf = defaultPromptTextFunc
 	}
