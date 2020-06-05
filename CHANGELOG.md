@@ -1,3 +1,7 @@
+# 2.5.4 / 2020-06-05
+
+* [ENHANCEMENT] Update deps
+
 # 2.5.3 / 2020-05-08
 
 * [FEATURE] Allow customizable fmt string for MFA prompt
