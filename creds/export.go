@@ -26,7 +26,7 @@ var Translations = map[string]map[string]string{
 		"AWS_SESSION_TOKEN":     "SessionToken",
 		"AWS_SECURITY_TOKEN":    "SessionToken",
 		"AWS_DEFAULT_REGION":    "Region",
-		"AWS_REGION":    "Region",
+		"AWS_REGION":            "Region",
 	},
 	"console": {
 		"sessionId":    "AccessKey",
