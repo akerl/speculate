@@ -13,16 +13,14 @@ end
 
 package(
   type: 'file',
-  artifacts: [
+  artifacts: %w(darwin/amd64 darwin/arm64 linux/amd64 linux/arm linux/arm64).map do |x|
+    os, arch = x.split '/'
+    filename = "#{@forge.name}_#{os}_#{arch}"
     {
-      source: 'bin/speculate_darwin',
-      name: 'speculate_darwin'
-    },
-    {
-      source: 'bin/speculate_linux',
-      name: 'speculate_linux'
+      source: "bin/#{filename}",
+      name: filename
     }
-  ]
+  end
 )
 
 test do
