@@ -39,11 +39,11 @@ var Translations = map[string]map[string]string{
 func (c Creds) Translate(dictionary map[string]string) map[string]string {
 	logger.InfoMsgf("translating using dictionary: %+v", dictionary)
 	old := c.ToMap()
-	new := make(map[string]string)
+	newEnv := make(map[string]string)
 	for k, v := range dictionary {
-		new[k] = old[v]
+		newEnv[k] = old[v]
 	}
-	return new
+	return newEnv
 }
 
 // ToMap returns the credentials as a map of field names to strings
