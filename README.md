@@ -1,7 +1,7 @@
 speculate
 =========
 
-[![GitHub Workflow Status](https://img.shields.io/actions/github/workflow/status/akerl/speculate/build.yml?branch=main)](https://github.com/akerl/speculate/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/akerl/speculate/build.yml?branch=main)](https://github.com/akerl/speculate/actions)
 [![GitHub release](https://img.shields.io/github/release/akerl/speculate.svg)](https://github.com/akerl/speculate/releases)
 [![License](https://img.shields.io/github/license/akerl/speculate)](https://github.com/akerl/speculate/blob/master/LICENSE)
 
