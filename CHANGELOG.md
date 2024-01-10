@@ -2,6 +2,10 @@
 
 * [ENHANCEMENT] Update deps
 
+# 2.5.5 / 2020-07-17
+
+* [ENHANCEMENT] Update deps
+
 # 2.5.4 / 2020-06-05
 
 * [ENHANCEMENT] Update deps
