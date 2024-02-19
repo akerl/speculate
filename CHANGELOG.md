@@ -1,3 +1,7 @@
+# 2.6.5 / 2024-02-18
+
+* [ENHANCEMENT] Update deps
+
 # 2.6.4 / 2024-01-10
 
 * [ENHANCEMENT] Update deps
