@@ -1,3 +1,7 @@
+# 2.6.6 / 2024-02-19
+
+* [BUGFIX] Resolve linting errors
+
 # 2.6.5 / 2024-02-18
 
 * [ENHANCEMENT] Update deps
