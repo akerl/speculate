@@ -11,7 +11,7 @@ import (
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version of speculate",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Printf("%s\n", version.Version)
 	},
 }
