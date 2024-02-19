@@ -1,7 +1,7 @@
 github.com/akerl/timber/v2 v2.0.1 h1:hY4VCOJns7KsxwxP/ifSt3Rz9GZCfKewapaimObnA2E=
 github.com/akerl/timber/v2 v2.0.1/go.mod h1:jBjRGI2CWuvbZlrZkp1JO/X51pMlbg72NFy+Vnd59oI=
-github.com/aws/aws-sdk-go v1.49.18 h1:g/iMXkfXeJQ7MvnLwroxWsTTNkHtdVJGxIgrAIEG62M=
-github.com/aws/aws-sdk-go v1.49.18/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
+github.com/aws/aws-sdk-go v1.50.20 h1:xfAnSDVf/azIWTVQXQODp89bubvCS85r70O3nuQ4dnE=
+github.com/aws/aws-sdk-go v1.50.20/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

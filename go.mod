@@ -1,10 +1,10 @@
 module github.com/akerl/speculate/v2
 
-go 1.20
+go 1.22
 
 require (
 	github.com/akerl/timber/v2 v2.0.1
-	github.com/aws/aws-sdk-go v1.49.18
+	github.com/aws/aws-sdk-go v1.50.20
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/spf13/cobra v1.8.0
 )
